@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 // other parts of the app
 import 'grid_view.dart';
+import 'profile.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -102,7 +103,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: null, // hide the app bar
       // The body of the scaffold is the widget that corresponds to the currently selected tab
-      body: _selectedIndex == 1 ? VideoGrid(videoIndices: _videoIndices) : _widgetOptions.elementAt(_selectedIndex),
+      body: (() {
+        if (_selectedIndex == 1) {
+          return VideoGrid(videoIndices: _videoIndices); 
+        }
+        else if (_selectedIndex == 4) {
+          return ProfilePage();
+        }
+        return _widgetOptions.elementAt(_selectedIndex);
+      }()),
+      // _selectedIndex == 1 ? VideoGrid(videoIndices: _videoIndices) : _widgetOptions.elementAt(_selectedIndex),
       // The bottom navigation bar shows the available tabs
       bottomNavigationBar: BottomNavigationBar(
         // The items in the bottom navigation bar correspond to each tab
