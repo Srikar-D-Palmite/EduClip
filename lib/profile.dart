@@ -1,6 +1,5 @@
 import 'package:edu_clip/grid_view.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 // The profile page should be expanded later on and modified. It should also be replicable so that it may be used for other people's profiles also
 class ProfilePage extends StatelessWidget {

@@ -6,6 +6,7 @@ import 'firebase_options.dart';
 // other parts of the app
 import 'grid_view.dart';
 import 'profile.dart';
+import 'explore.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget  {
         // accentColor: Colors.white,
       ),
       // The initial screen of the application
-      home: MyHomePage(title: 'Educlip'),
+      home: const MyHomePage(title: 'Educlip'),
     );
   }
 }
@@ -105,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // The body of the scaffold is the widget that corresponds to the currently selected tab
       body: (() {
         if (_selectedIndex == 1) {
-          return VideoGrid(videoIndices: _videoIndices); 
+          return Explore(videoIndices: _videoIndices); 
         }
         else if (_selectedIndex == 4) {
           return ProfilePage();
