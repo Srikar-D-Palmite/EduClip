@@ -1,41 +1,89 @@
 import 'package:flutter/material.dart';
 
 class MessagesPage extends StatelessWidget {
+  final List<String> _messages = [
+    'Hi there!',
+    'How are you?',
+    'What are you up to?',
+    'Do you want to hang out later?',
+    'I have some news to share!',
+    'Can we talk about something?',
+    'Did you see the new movie yet?',
+    'Let me know if you need anything!',
+    'Thanks for the help!',
+    'You are the best!',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Messages'),
+        backgroundColor: Colors.white,
+        title: Text(
+          'Messages',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.search,
+              color: Colors.black,
+            ),
+            onPressed: () {},
+          ),
+        ],
       ),
-      body: ListView(
+      body: Column(
         children: <Widget>[
-          Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage('https://picsum.photos/200'),
+          Container(
+            padding: const EdgeInsets.all(20.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search messages',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey[200],
+                prefixIcon: Icon(Icons.search),
               ),
-              title: Text('John Doe'),
-              subtitle: Text('Hi, how are you?'),
-              trailing: Text('2m'),
-              onTap: () {
-                // TODO: Navigate to chat screen
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _messages.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    child: Text(
+                      'A',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.blue,
+                  ),
+                  title: Text(
+                    'Alice',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    _messages[index],
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: Text(
+                    '8:32 PM',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                );
               },
             ),
           ),
-          Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage('https://picsum.photos/200'),
-              ),
-              title: Text('Jane Doe'),
-              subtitle: Text('Check out my new post!'),
-              trailing: Text('1h'),
-              onTap: () {
-                // TODO: Navigate to chat screen
-              },
-            ),
-          ),
-          // Add more message items here
         ],
       ),
     );
