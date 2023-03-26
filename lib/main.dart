@@ -3,10 +3,12 @@ import 'dart:math';
 // libraries necessary for working with firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 // other parts of the app
-import 'grid_view.dart';
+// import 'grid_view.dart';
 import 'profile.dart';
 import 'explore.dart';
+import 'login.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -17,10 +19,8 @@ void main() async {
   runApp(const MyApp());
 }
 
-// void main() => runApp(MyApp());
-
 // This widget is the root of the application
-class MyApp extends StatelessWidget  {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -34,7 +34,12 @@ class MyApp extends StatelessWidget  {
         // accentColor: Colors.white,
       ),
       // The initial screen of the application
-      home: const MyHomePage(title: 'Educlip'),
+      // home: const MyHomePage(title: 'Educlip'),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginPage(),
+        '/home': (context) => const MyHomePage(title: 'Educlip'),
+      },
     );
   }
 }
@@ -89,7 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   // Random list of videos (to be changed later)
-  final List<int> _videoIndices = List.generate(50, (index) => Random().nextInt(100));
+  final List<int> _videoIndices =
+      List.generate(50, (index) => Random().nextInt(100));
 
   // This function is called when a tab is tapped. It updates the index of the currently selected tab
   void _onItemTapped(int index) {
@@ -106,9 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
       // The body of the scaffold is the widget that corresponds to the currently selected tab
       body: (() {
         if (_selectedIndex == 1) {
-          return Explore(videoIndices: _videoIndices); 
-        }
-        else if (_selectedIndex == 4) {
+          return Explore(videoIndices: _videoIndices);
+        } else if (_selectedIndex == 4) {
           return ProfilePage();
         }
         return _widgetOptions.elementAt(_selectedIndex);
