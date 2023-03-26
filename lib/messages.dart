@@ -11,7 +11,7 @@ class MessagesPage extends StatelessWidget {
     'Did you see the new movie yet?',
     'Let me know if you need anything!',
     'Thanks for the help!',
-    'You are the best!',
+    'You are really the best!',
   ];
 
   @override
