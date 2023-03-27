@@ -1,3 +1,4 @@
+import 'package:edu_clip/messages.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 // libraries necessary for working with firebase
@@ -9,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'profile.dart';
 import 'explore.dart';
 import 'login.dart';
+import 'messages.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -113,6 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: (() {
         if (_selectedIndex == 1) {
           return Explore(videoIndices: _videoIndices);
+        } else if (_selectedIndex == 2) {
+          return MessagesPage();
         } else if (_selectedIndex == 4) {
           return ProfilePage();
         }
