@@ -8,7 +8,7 @@ class ProfilePage extends StatelessWidget {
   });
 
   // Random list of videos (to be changed later)
-  final List<int> _videoIndices = List.generate(10, (index) => 10-index);
+  final List<int> _videoIndices = List.generate(10, (index) => 10 - index);
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +17,13 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios),
-                    onPressed: () {
-                    // when pressed, remove/pop the current page. Do not run pop if there is nothing beneath the popup 
-                    //   Navigator.pop(context);
-                    },
+                  const Text(
+                    "              ",
                   ),
                   const Text(
                     'Profile',
@@ -105,7 +102,8 @@ class UserInfoArea extends StatelessWidget {
     super.key,
     required String name,
     required int value,
-  }) :  _valu = value, _name = name;
+  })  : _valu = value,
+        _name = name;
   final String _name;
   final int _valu;
 

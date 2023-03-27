@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 
 class MessagesPage extends StatelessWidget {
-  final List<String> _messages = [
-    'Hi there!',
-    'How are you?',
-    'What are you up to?',
-    'Do you want to hang out later?',
-    'I have some news to share!',
-    'Can we talk about something?',
-    'Did you see the new movie yet?',
-    'Let me know if you need anything!',
-    'Thanks for the help!',
-    'You really are the best!',
+  final List<Map<String, String>> _messages = [
+    {'sender': 'Alice', 'message': 'Hi there!'},
+    {'sender': 'Bob', 'message': 'How are you?'},
+    {'sender': 'Charlie', 'message': 'What are you up to?'},
+    {'sender': 'Michael', 'message': 'Do you want to hang out later?'},
+    {'sender': 'Jason', 'message': 'I have some news to share!'},
+    {'sender': 'Johnson', 'message': 'Can we talk about something?'},
+    {'sender': 'Tom', 'message': 'Did you see the new movie yet?'},
+    {'sender': 'Ryan', 'message': 'Let me know if you need anything!'},
+    {'sender': 'Jake', 'message': 'Thanks for the help!'},
+    {'sender': 'Chris', 'message': 'You really are the best!'}
   ];
+  final _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,31 +27,49 @@ class MessagesPage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Colors.black,
-            ),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Column(
         children: <Widget>[
           Container(
             padding: const EdgeInsets.all(20.0),
             child: TextField(
+              controller: _controller,
               decoration: InputDecoration(
-                hintText: 'Search messages',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide.none,
+                // The word "search" in the searchbox
+                hintText: 'Search Messages',
+                hintStyle: const TextStyle(
+                  color: Colors.grey,
+                  // fontWeight: FontWeight.w500,
                 ),
-                filled: true,
-                fillColor: Colors.grey[200],
-                prefixIcon: Icon(Icons.search),
+                // the search icon
+                prefixIcon: const Icon(Icons.search),
+                prefixIconColor: Colors.black,
+                // the delete text icon
+                suffixIcon: IconButton(
+                  onPressed: _controller.clear,
+                  icon: const Icon(Icons.close),
+                  iconSize: 18,
+                ),
+                suffixIconColor: Colors.black,
+                // padding around the text (affects the size of the searchbox)
+                contentPadding: const EdgeInsets.all(5.0),
+                // defining the border normally, and when focused (pressed on)
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    // width: 3,
+                    color: Colors.grey,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    // width: 3,
+                    color: Colors.grey,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
               ),
+              // border: InputBorder.none,
             ),
           ),
           Expanded(
@@ -66,11 +85,11 @@ class MessagesPage extends StatelessWidget {
                     backgroundColor: Colors.blue,
                   ),
                   title: Text(
-                    'Alice',
+                    _messages[index]["sender"]!,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    _messages[index],
+                    _messages[index]["message"]!,
                     overflow: TextOverflow.ellipsis,
                   ),
                   trailing: Text(
