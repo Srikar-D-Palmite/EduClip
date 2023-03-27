@@ -18,92 +18,101 @@ class MessagesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          'Messages',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(20.0),
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                // The word "search" in the searchbox
-                hintText: 'Search Messages',
-                hintStyle: const TextStyle(
-                  color: Colors.grey,
-                  // fontWeight: FontWeight.w500,
-                ),
-                // the search icon
-                prefixIcon: const Icon(Icons.search),
-                prefixIconColor: Colors.black,
-                // the delete text icon
-                suffixIcon: IconButton(
-                  onPressed: _controller.clear,
-                  icon: const Icon(Icons.close),
-                  iconSize: 18,
-                ),
-                suffixIconColor: Colors.black,
-                // padding around the text (affects the size of the searchbox)
-                contentPadding: const EdgeInsets.all(5.0),
-                // defining the border normally, and when focused (pressed on)
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    // width: 3,
-                    color: Colors.grey,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    // width: 3,
-                    color: Colors.grey,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-              ),
-              // border: InputBorder.none,
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                    child: Text(
-                      'A',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    backgroundColor: Colors.blue,
-                  ),
-                  title: Text(
-                    _messages[index]["sender"]!,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    _messages[index]["message"]!,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  trailing: Text(
-                    '8:32 PM',
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            SizedBox(height: 12.0),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  const Text(
+                    'Messages',
                     style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12.0,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                );
-              },
+                ],
+              ),
             ),
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.all(20.0),
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  // The word "search" in the searchbox
+                  hintText: 'Search Messages',
+                  hintStyle: const TextStyle(
+                    color: Colors.grey,
+                    // fontWeight: FontWeight.w500,
+                  ),
+                  // the search icon
+                  prefixIcon: const Icon(Icons.search),
+                  prefixIconColor: Colors.black,
+                  // the delete text icon
+                  suffixIcon: IconButton(
+                    onPressed: _controller.clear,
+                    icon: const Icon(Icons.close),
+                    iconSize: 18,
+                  ),
+                  suffixIconColor: Colors.black,
+                  // padding around the text (affects the size of the searchbox)
+                  contentPadding: const EdgeInsets.all(5.0),
+                  // defining the border normally, and when focused (pressed on)
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      // width: 3,
+                      color: Colors.grey,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      // width: 3,
+                      color: Colors.grey,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                ),
+                // border: InputBorder.none,
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _messages.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      child: Text(
+                        _messages[index]["sender"]![0],
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: Text(
+                      _messages[index]["sender"]!,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      _messages[index]["message"]!,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: Text(
+                      '8:32 PM',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

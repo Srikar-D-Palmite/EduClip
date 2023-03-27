@@ -1,6 +1,8 @@
 import 'package:edu_clip/grid_view.dart';
 import 'package:flutter/material.dart';
 
+import 'settings.dart';
+
 // The profile page should be expanded later on and modified. It should also be replicable so that it may be used for other people's profiles also
 class ProfilePage extends StatelessWidget {
   ProfilePage({
@@ -35,7 +37,12 @@ class ProfilePage extends StatelessWidget {
                   // more button (takes user to settings)
                   IconButton(
                     icon: const Icon(Icons.more_horiz),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SettingsPage()),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -52,11 +59,12 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 15.0),
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 50.0,
                     // to replace with user profile image
                     // backgroundImage: AssetImage('/images/avatar.png'),
                     // backgroundImage: ,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(height: 10.0),
                   Text(
@@ -81,9 +89,6 @@ class ProfilePage extends StatelessWidget {
                     child: IconButton(
                       icon: const Icon(Icons.add),
                       onPressed: () {},
-                      style: IconButton.styleFrom(
-                        foregroundColor: Colors.blue,
-                      ),
                     ),
                   ),
                 ],

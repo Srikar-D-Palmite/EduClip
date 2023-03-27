@@ -72,7 +72,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
-                    hintText: 'Name',
+                    hintText: 'Full Name',
                     contentPadding: const EdgeInsets.all(16.0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),

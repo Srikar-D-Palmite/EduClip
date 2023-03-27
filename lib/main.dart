@@ -18,12 +18,19 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 // This widget is the root of the application
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+  static _MyAppState of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>()!;
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _theme = ThemeMode.light;
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +39,20 @@ class MyApp extends StatelessWidget {
       title: 'Educlip',
       // The color theme of the application
       theme: ThemeData(
-        primaryColor: Colors.black,
-        // accentColor: Colors.white,
-      ),
+          // primaryColor: Colors.black,
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+        primary: const Color.fromARGB(255, 84, 180, 211),
+        secondary: Colors.white,
+      )
+          // accentColor: Colors.white,
+          ),
+      darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+        primary: Colors.black,
+        secondary: Colors.black,
+        background: Colors.black,
+      )),
+      themeMode: _theme,
       // The initial screen of the application
       // home: const MyHomePage(title: 'Educlip'),
       initialRoute: '/login',
@@ -43,6 +61,12 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const MyHomePage(title: 'Educlip'),
       },
     );
+  }
+
+  void changeTheme(ThemeMode themeMode) {
+    setState(() {
+      _theme = themeMode;
+    });
   }
 }
 
