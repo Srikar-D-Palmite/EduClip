@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'login.dart';
+// import 'login.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);
@@ -197,6 +197,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
       try {
         await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: _email, password: _password);
+        FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+          // 'uid': FirebaseAuth.instance.currentUser!.uid,
+          'email': _email,
+          'firstName': _firstName,
+          'lastName': _lastName,
+          'username': _username,
+        });
+        //.onError((e, _) => print("Error writing document: $e"));
         Navigator.of(context).pushReplacementNamed('/home');
       } catch (e) {
         ScaffoldMessenger.of(context)

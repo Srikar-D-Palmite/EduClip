@@ -1,16 +1,30 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:edu_clip/grid_view.dart';
 import 'package:flutter/material.dart';
 
 import 'settings.dart';
 
+
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
 // The profile page should be expanded later on and modified. It should also be replicable so that it may be used for other people's profiles also
-class ProfilePage extends StatelessWidget {
-  ProfilePage({
-    super.key,
-  });
+class _ProfilePageState extends State<ProfilePage> {
+  // ProfilePage({
+  //   super.key,
+  // });
+  User? user;
 
   // Random list of videos (to be changed later)
   final List<int> _videoIndices = List.generate(10, (index) => 10 - index);
+  @override
+  void initState() {
+    super.initState();
+    user = FirebaseAuth.instance.currentUser;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,13 +65,37 @@ class ProfilePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text(
-                    'John Doe',
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  FutureBuilder<DocumentSnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .get(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      if (snapshot.hasError) {
+                        return const Text('Error');
+                      }
+                      final Map<String, dynamic> data = snapshot.data?.data()! as Map<String, dynamic>;
+                      return Text(
+                        "${data['firstName'] ?? 0} ${data['lastName'] ?? 0}",
+                        style: const TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    }
                   ),
+                  // Text(
+                  //   // user.data["firstName"],
+                  //   'John Doe',
+                  //   style: TextStyle(
+                  //     fontSize: 20.0,
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  // ),
                   const SizedBox(height: 15.0),
                   CircleAvatar(
                     radius: 50.0,
@@ -67,13 +105,36 @@ class ProfilePage extends StatelessWidget {
                     backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(height: 10.0),
-                  Text(
-                    '@johndoe',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.grey[600],
-                    ),
+                  FutureBuilder<DocumentSnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .get(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      if (snapshot.hasError) {
+                        return const Text('Error');
+                      }
+                      final Map<String, dynamic> data = snapshot.data?.data()! as Map<String, dynamic>;
+                      return Text(
+                        "@${data['username'] ?? 0}",
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.grey,
+                        ),
+                      );
+                    }
                   ),
+                  // Text(
+                  //   '@johndoe',
+                  //   style: TextStyle(
+                  //     fontSize: 16.0,
+                  //     color: Colors.grey[600],
+                  //   ),
+                  // ),
                   const SizedBox(height: 20.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
