@@ -39,22 +39,22 @@ class _MyAppState extends State<MyApp> {
       title: 'Educlip',
       // The color theme of the application
       theme: ThemeData(
-          // primaryColor: Colors.black,
+          //primaryColor: Colors.black,
           colorScheme: ColorScheme.fromSwatch().copyWith(
         primary: const Color.fromARGB(255, 84, 180, 211),
-        secondary: Colors.white,
-      )
+        brightness: Brightness.light,
+      ),
+      
           // accentColor: Colors.white,
           ),
       darkTheme: ThemeData(
           colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: Colors.black,
-        secondary: Colors.black,
-        background: Colors.black,
+        primary: Colors.white,
+        brightness: Brightness.dark,
       )),
       themeMode: _theme,
       // The initial screen of the application
-      // home: const MyHomePage(title: 'Educlip'),
+      //home: const MyHomePage(title: 'Educlip'),
       initialRoute: '/login',
       routes: {
         '/login': (context) => LoginPage(),
@@ -171,6 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
+          
         ],
         // The index of the currently selected tab
         currentIndex: _selectedIndex,
@@ -179,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // The color of the icon of the unselected tabs
         unselectedItemColor: Colors.grey,
         // The background color of the bottom navigation bar
-        // backgroundColor: Colors.black,
+        backgroundColor: Colors.black,
         // This function is called when a tab is tapped
         onTap: _onItemTapped,
       ),

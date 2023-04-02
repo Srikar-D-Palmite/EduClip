@@ -1,3 +1,4 @@
+import 'package:edu_clip/main.dart';
 import 'package:flutter/material.dart';
 
 class MessagesPage extends StatelessWidget {
@@ -72,7 +73,7 @@ class MessagesPage extends StatelessWidget {
                   focusedBorder: const OutlineInputBorder(
                     borderSide: BorderSide(
                       // width: 3,
-                      color: Colors.grey,
+                      color: Colors.black,
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
@@ -90,7 +91,6 @@ class MessagesPage extends StatelessWidget {
                         _messages[index]["sender"]![0],
                         style: TextStyle(color: Colors.white),
                       ),
-                      backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(
                       _messages[index]["sender"]!,

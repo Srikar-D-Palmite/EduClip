@@ -69,6 +69,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       ),
     );
+    
   }
 
   void _toggleDarkMode(bool darkModeEnabled) {
