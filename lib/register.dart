@@ -195,15 +195,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (form.validate()) {
       form.save();
       try {
+        // register account
         await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: _email, password: _password);
+        // write user data in database
         FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
-          // 'uid': FirebaseAuth.instance.currentUser!.uid,
           'email': _email,
           'firstName': _firstName,
           'lastName': _lastName,
           'username': _username,
         });
+        // sign in
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: _email, password: _password);
         //.onError((e, _) => print("Error writing document: $e"));
         Navigator.of(context).pushReplacementNamed('/home');
       } catch (e) {
