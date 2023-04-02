@@ -19,7 +19,11 @@ class _ProfilePageState extends State<ProfilePage> {
   User? user;
 
   // Random list of videos (to be changed later)
-  final List<int> _videoIndices = List.generate(10, (index) => 10 - index);
+  final List<String> _videoUrls =[
+    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+    'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+    // 'https://flutter.github.io/assets-for-api-docs/assets/videos/rooster.mp4',
+  ];
   @override
   void initState() {
     super.initState();
@@ -155,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-            Expanded(child: VideoGrid(videoIndices: _videoIndices)),
+            Expanded(child: VideoGrid(videoUrls: _videoUrls)),
           ],
         ),
       ),

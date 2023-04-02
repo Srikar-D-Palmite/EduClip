@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 class Explore extends StatelessWidget {
   Explore({
     super.key,
-    required List<int> videoIndices,
-  }) : _videoIndices = videoIndices;
+  });
 
-  final List<int> _videoIndices;
+  // Random list of videos (to be changed later)
+  final List<String> _videoUrls =[
+    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+    'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+    // 'https://flutter.github.io/assets-for-api-docs/assets/videos/rooster.mp4',
+  ];
   final _controller = TextEditingController();
 
   @override
@@ -17,17 +21,6 @@ class Explore extends StatelessWidget {
         // Can also be implemented with appBar instead of a column + Container
         child: Column(
           children: [
-            // back button
-            // Align(
-            //   alignment: Alignment.centerLeft,
-            //   child: IconButton(
-            //     icon: const Icon(Icons.arrow_back_ios),
-            //     onPressed: () {
-            //     // when pressed, remove/pop the current page. Do not run pop if there is nothing beneath the popup 
-            //     //   Navigator.pop(context);
-            //     },
-            //   ),
-            // ),
             const SizedBox(height: 15),
             // Search bar
             Container(
@@ -80,7 +73,7 @@ class Explore extends StatelessWidget {
             const SizedBox(height: 10),
             // grid of videos
             Expanded(
-              child: VideoGrid(videoIndices: _videoIndices),
+              child: VideoGrid(videoUrls: _videoUrls),
             ),
           ],
         ),

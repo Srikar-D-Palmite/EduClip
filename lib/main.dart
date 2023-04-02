@@ -1,16 +1,16 @@
 import 'package:edu_clip/messages.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 // libraries necessary for working with firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 // other parts of the app
 // import 'grid_view.dart';
 import 'profile.dart';
 import 'explore.dart';
 import 'login.dart';
-import 'messages.dart';
+// import 'messages.dart';
+import 'video_player.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -119,9 +119,6 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
   ];
 
-  // Random list of videos (to be changed later)
-  final List<int> _videoIndices =
-      List.generate(50, (index) => Random().nextInt(100));
 
   // This function is called when a tab is tapped. It updates the index of the currently selected tab
   void _onItemTapped(int index) {
@@ -138,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // The body of the scaffold is the widget that corresponds to the currently selected tab
       body: (() {
         if (_selectedIndex == 1) {
-          return Explore(videoIndices: _videoIndices);
+          return Explore();
         } else if (_selectedIndex == 2) {
           return MessagesPage();
         } else if (_selectedIndex == 4) {
