@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -70,7 +71,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           ListTile(
             title: Text('Logout'),
-            onTap: () {},
+            onTap: () {_logout(context);},
           ),
         ],
       ),
@@ -85,6 +86,16 @@ class _SettingsPageState extends State<SettingsPage> {
     } else {
       // enable light mode
       MyApp.of(context).changeTheme(ThemeMode.light);
+    }
+  }
+
+  void _logout(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.of(context).pushReplacementNamed('/login');
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 }
