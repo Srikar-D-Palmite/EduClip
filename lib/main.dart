@@ -11,6 +11,7 @@ import 'explore.dart';
 import 'login.dart';
 // import 'messages.dart';
 import 'video_player.dart';
+import 'notifications.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -140,6 +141,8 @@ class _MyHomePageState extends State<MyHomePage> {
           return Explore();
         } else if (_selectedIndex == 2) {
           return MessagesPage();
+        } else if (_selectedIndex == 3) {
+          return NotificationsPage();
         } else if (_selectedIndex == 4) {
           return ProfilePage();
         }

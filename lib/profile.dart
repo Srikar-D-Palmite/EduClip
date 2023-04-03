@@ -98,20 +98,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         );
                       }),
-                  // Text(
-                  //   // user.data["firstName"],
-                  //   'John Doe',
-                  //   style: TextStyle(
-                  //     fontSize: 20.0,
-                  //     fontWeight: FontWeight.bold,
-                  //   ),
-                  // ),
                   const SizedBox(height: 15.0),
                   CircleAvatar(
                     radius: 50.0,
                     // to replace with user profile image
                     // backgroundImage: AssetImage('/images/avatar.png'),
-                    // backgroundImage: ,
                     backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(height: 10.0),
@@ -139,13 +130,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         );
                       }),
-                  // Text(
-                  //   '@johndoe',
-                  //   style: TextStyle(
-                  //     fontSize: 16.0,
-                  //     color: Colors.grey[600],
-                  //   ),
-                  // ),
                   const SizedBox(height: 20.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

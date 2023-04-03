@@ -75,6 +75,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   late String _email, _password;
+  String _errorMessage = '';
   bool _showPassword = false;
 
   void _togglePasswordVisibility() {
@@ -92,8 +93,15 @@ class _LoginFormState extends State<LoginForm> {
         child: Column(
           children: [
             TextFormField(
-              validator: (value) =>
-                  value!.isEmpty ? 'Email can\'t be empty' : null,
+              validator: (value) //{
+                  =>
+                  value!.isEmpty
+                      ? 'Please enter your email or username'
+                      : RegExp(r'^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$')
+                                  .hasMatch(value) ||
+                              RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value)
+                          ? null
+                          : 'Please enter a valid email or username',
               onSaved: (value) => _email = value!,
               decoration: InputDecoration(
                 filled: true,
@@ -137,6 +145,19 @@ class _LoginFormState extends State<LoginForm> {
               ),
             ),
             const SizedBox(height: 15.0),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _errorMessage,
+                  style: TextStyle(
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15.0),
             TextButton(
               onPressed: () => _submitForm(context),
               style: TextButton.styleFrom(
@@ -160,16 +181,36 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _submitForm(BuildContext context) async {
+    String errorMessage;
     final form = _formKey.currentState!;
     if (form.validate()) {
       form.save();
       try {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _email, password: _password);
+        setState(() {
+          _errorMessage = '';
+        });
         Navigator.of(context).pushReplacementNamed('/home');
-      } catch (e) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          errorMessage = 'Invalid email';
+        } else if (e.code == 'wrong-password') {
+          errorMessage = 'Invalid password';
+        } else if (e.code == "invalid-email") {
+          errorMessage = 'Invalid username';
+        } else {
+          errorMessage = 'An error occurred. Please try again later.';
+        }
+
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //     content: Text(
+        //   errorMessage,
+        //   style: TextStyle(color: Colors.red),
+        // )));
+        setState(() {
+          _errorMessage = errorMessage;
+        });
       }
     }
   }
