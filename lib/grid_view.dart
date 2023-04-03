@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 import 'video_player.dart';
 import 'package:video_player/video_player.dart';
 

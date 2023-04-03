@@ -87,6 +87,7 @@ class MessagesPage extends StatelessWidget {
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     leading: CircleAvatar(
+                      backgroundColor: const Color.fromARGB(255, 84, 180, 211),
                       child: Text(
                         _messages[index]["sender"]![0],
                         style: TextStyle(color: Colors.white),

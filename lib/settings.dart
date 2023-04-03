@@ -26,7 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
+          const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
               'General Settings',
@@ -37,7 +37,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           SwitchListTile(
-            title: Text('Notifications'),
+            title: const Text('Notifications'),
             value: _notificationsEnabled,
             onChanged: (bool value) {
               setState(() {
@@ -46,8 +46,8 @@ class _SettingsPageState extends State<SettingsPage> {
             },
           ),
           SwitchListTile(
-            title: Text('Dark Mode'),
-            value: _darkModeEnabled,
+            title: const Text('Dark Mode'),
+            value: (_darkModeEnabled = Theme.of(context).brightness == Brightness.dark),
             onChanged: (bool value) {
               setState(() {
                 _darkModeEnabled = value;
@@ -55,7 +55,7 @@ class _SettingsPageState extends State<SettingsPage> {
               });
             },
           ),
-          Padding(
+          const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
               'Account',
