@@ -1,15 +1,20 @@
 import 'package:edu_clip/grid_view.dart';
 import 'package:flutter/material.dart';
 
-class Explore extends StatelessWidget {
+class Explore extends StatefulWidget {
   Explore({
     super.key,
   });
 
+  @override
+  State<Explore> createState() => _ExploreState();
+}
+
+class _ExploreState extends State<Explore> {
   // Random list of videos (to be changed later)
   final List<String> _videoUrls = [
-    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-    'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+    // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+    // 'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
     'https://media.istockphoto.com/id/1449673113/video/drone-view-of-van-point-brittany-france.mp4?s=mp4-640x640-is&k=20&c=YSIrsLs9VdrGDbazjN74UMtKMXggD_x3VBgj7Lt-jpE=',
     'https://media.istockphoto.com/id/1435810600/video/hand-choosing-smile-face-from-emotion-block-customer-review-good-experience-positive-feedback.mp4?s=mp4-640x640-is&k=20&c=6qpiKhW8PxrvX5Me9dQSZUaveVFhVYatIWAN-PvlEG0=',
     'https://media.istockphoto.com/id/1410075891/video/aerial-shot-of-the-verdon-gorge-in-provence-france.mp4?s=mp4-640x640-is&k=20&c=BJ8P1a-NpK_4hNKA5qQ8YtRLg22DxMuoFSayvSFeEyk=',
@@ -18,6 +23,7 @@ class Explore extends StatelessWidget {
 
     // 'https://flutter.github.io/assets-for-api-docs/assets/videos/rooster.mp4',
   ];
+
   final _controller = TextEditingController();
 
   @override

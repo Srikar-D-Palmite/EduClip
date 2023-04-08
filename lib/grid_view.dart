@@ -16,14 +16,19 @@ class VideoGrid extends StatefulWidget {
 
 class _VideoGridState extends State<VideoGrid> {
   late List<VideoPlayerController> _controllers;
+  
   @override
   void initState() {
     super.initState();
     // initialize the video players
-    _controllers = widget._videoUrls.map((url) => VideoPlayerController.network(url)).toList();
+    _controllers = widget._videoUrls
+        .map((url) => VideoPlayerController.network(url))
+        .toList();
     // initialize all the controllers and wait for them to load
-    Future.wait(_controllers.map((controller) => controller.initialize()));
+    Future.wait(_controllers.map((controller) => controller.initialize())).then((value) => setState(() {}));
+    // setState(() {});
   }
+
   @override
   void dispose() {
     // dispose all the video players when the widget is disposed
@@ -46,20 +51,34 @@ class _VideoGridState extends State<VideoGrid> {
       ),
       // The widgets to display in the grid
       itemBuilder: (BuildContext context, int index) {
-        // Return a blank video widget with a random number indicating the video index
         return GestureDetector(
-          onTap:() => Navigator.push(
+          // upon tapping a video, navigate to the full screen video player
+          onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => FullScreenVideoPlayer(
-                videoUrl: widget._videoUrls[index],
+                videoUrls: widget._videoUrls,
+                index: index,
               ),
             ),
           ),
-          child: AspectRatio(
-            aspectRatio: _controllers[index].value.aspectRatio,
-            child: VideoPlayer(_controllers[index]),
-          ),
+          // upon loading all the videos, display them
+          child:_controllers[index].value.isInitialized
+            ?  ClipRect(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
+                child: SizedBox(
+                  height: _controllers[index].value.size.height,
+                  width: _controllers[index].value.size.width,
+                  child: VideoPlayer(_controllers[index]),
+                ),
+              ),
+          ) :
+          LinearProgressIndicator(
+            backgroundColor: Colors.grey[100],
+            color: Colors.grey[200],
+          )
         );
       },
     );
