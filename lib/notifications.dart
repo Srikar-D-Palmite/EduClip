@@ -18,8 +18,9 @@ class _MyHomePageState extends State<NotificationsPage> {
                 iconTheme: IconThemeData(color:Theme.of(context).brightness == Brightness.dark
                 ? Colors.white
                 : Colors.black ),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Colors.white,
         centerTitle: true,
+        elevation: 0,
         foregroundColor: Colors.black,
       ),
       body: Center(

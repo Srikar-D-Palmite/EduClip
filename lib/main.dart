@@ -12,6 +12,7 @@ import 'login.dart';
 // import 'messages.dart';
 import 'video_player.dart';
 import 'notifications.dart';
+import 'settings.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -32,37 +33,41 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ThemeMode _theme = ThemeMode.light;
+  Settings settings = Settings(autoScrollEnabled: false, darkModeEnabled: false, notificationsEnabled: true);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      // The title of the application
-      title: 'Educlip',
-      // The color theme of the application
-      theme: ThemeData(
-          //primaryColor: Colors.black,
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: const Color.fromARGB(255, 84, 180, 211),
-        secondary: const Color.fromARGB(255, 84, 180, 211),
-        brightness: Brightness.light,
-      ),
-      
-          // accentColor: Colors.white,
-          ),
-      darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: Colors.white,
-        secondary: Colors.black,
-        brightness: Brightness.dark,
-      )),
-      themeMode: _theme,
-      // The initial screen of the application
-      //home: const MyHomePage(title: 'Educlip'),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => LoginPage(),
-        '/home': (context) => const MyHomePage(title: 'Educlip'),
+    return SettingsProvider(
+      settings: settings,
+      updateSettings: (newSettings) {
+        settings.darkModeEnabled = newSettings.darkModeEnabled;
       },
+      child: MaterialApp(
+        // The title of the application
+        title: 'Educlip',
+        // The color theme of the application
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+            primary: const Color.fromARGB(255, 84, 180, 211),
+            secondary: const Color.fromARGB(255, 84, 180, 211),
+            brightness: Brightness.light,
+          ),
+        ),
+        darkTheme: ThemeData(
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+          primary: Colors.white,
+          secondary: Colors.black,
+          brightness: Brightness.dark,
+        )),
+        themeMode: _theme,
+        // The initial screen of the application
+        // to change. for debug only
+        initialRoute: '/login',
+        routes: {
+          '/login': (context) => LoginPage(),
+          '/home': (context) => const MyHomePage(title: 'Educlip'),
+        },
+      ),
     );
   }
 
@@ -122,7 +127,6 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
   ];
 
-
   // This function is called when a tab is tapped. It updates the index of the currently selected tab
   void _onItemTapped(int index) {
     setState(() {
@@ -173,7 +177,6 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
-          
         ],
         // The index of the currently selected tab
         currentIndex: _selectedIndex,

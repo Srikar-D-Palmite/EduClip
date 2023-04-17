@@ -74,7 +74,7 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
-  late String _email, _password;
+  late String _email, _password, _username, _val;
   String _errorMessage = '';
   bool _showPassword = false;
 
@@ -185,29 +185,51 @@ class _LoginFormState extends State<LoginForm> {
     final form = _formKey.currentState!;
     if (form.validate()) {
       form.save();
+      final isEmail = _email.contains('@');
       try {
-        await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: _email, password: _password);
+        UserCredential userCredential;
+
+        if (isEmail) {
+          // User provided an email address
+          userCredential = await FirebaseAuth.instance
+              .signInWithEmailAndPassword(email: _email, password: _password);
+        } else {
+          // User provided a username
+          final _username = _email;
+          final firestoreInstance = FirebaseFirestore.instance;
+          final querySnapshot = await firestoreInstance
+              .collection('users')
+              .where('username', isEqualTo: _username)
+              .get();
+
+          if (querySnapshot.docs.isNotEmpty) {
+            // User was found by username
+            final emaill = querySnapshot.docs.first['email'];
+            userCredential = await FirebaseAuth.instance
+                .signInWithEmailAndPassword(email: emaill, password: _password);
+          } else {
+            // User was not found by username
+            throw FirebaseAuthException(
+              code: 'user-not-found',
+              message: 'Invalid email or username',
+            );
+          }
+        }
         setState(() {
           _errorMessage = '';
         });
         Navigator.of(context).pushReplacementNamed('/home');
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
-          errorMessage = 'Invalid email';
+          errorMessage = 'Invalid email or username';
         } else if (e.code == 'wrong-password') {
           errorMessage = 'Invalid password';
         } else if (e.code == "invalid-email") {
-          errorMessage = 'Invalid username';
+          errorMessage = 'Invalid email or username';
         } else {
           errorMessage = 'An error occurred. Please try again later.';
         }
 
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //     content: Text(
-        //   errorMessage,
-        //   style: TextStyle(color: Colors.red),
-        // )));
         setState(() {
           _errorMessage = errorMessage;
         });
