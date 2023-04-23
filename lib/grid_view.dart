@@ -39,6 +39,8 @@ class _VideoGridState extends State<VideoGrid> {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(10),
       // The number of videos to display
       itemCount: widget._videoUrls.length,
