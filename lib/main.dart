@@ -5,12 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // other parts of the app
-// import 'grid_view.dart';
 import 'profile.dart';
 import 'explore.dart';
 import 'login.dart';
-// import 'messages.dart';
-import 'video_player.dart';
 import 'notifications.dart';
 import 'settings.dart';
 

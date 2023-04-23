@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'dart:async';
 import 'settings.dart';
 
 /// Stateful widget to fetch and then display video content.
@@ -15,16 +17,14 @@ class FullScreenVideoPlayer extends StatefulWidget {
 
 class _VideoPlayerState extends State<FullScreenVideoPlayer> {
   late VideoPlayerController _controller;
-  late int index;
+  late int _index;
   int _upvotes = 5;
-  int _downvotes = 5;
-  int _favorite = 5;
-  double _iconSize = 24;
+  final double _iconSize = 24;
 
   @override
   void initState() {
     super.initState();
-    index = widget.index;
+    _index = widget.index;
     _initializeVideoPlayer();
   }
 
@@ -35,13 +35,24 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
   }
 
   void _initializeVideoPlayer([bool loop = true]) {
-    _controller = VideoPlayerController.network(widget.videoUrls[index]);
+    _controller = VideoPlayerController.network(widget.videoUrls[_index]);
     _controller.initialize().then((_) {
       // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
       setState(() {});
     });
     _controller.setLooping(loop);
     _controller.play();
+  }
+
+  void _updateVideoPlayer() {
+    final oldController = _controller;
+    _controller = VideoPlayerController.network(widget.videoUrls[_index]);
+    _controller.initialize().then((_) {
+      setState(() {});
+    });
+    _controller.setLooping(true);
+    _controller.play();
+    oldController.dispose();
   }
 
   pausePlay() {
@@ -55,10 +66,8 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
     // final settings = SettingsProvider.of(context).settings;
     // if (_controller.value.duration - _controller.value.position < Duration(seconds: 1)) {
     //   setState(() {
-    //     index = (index + 1) % widget.videoUrls.length;
-    //     final oldController = _controller;
-    //     _initializeVideoPlayer();
-    //     oldController.dispose();
+    //     _index = (_index + 1) % widget.videoUrls.length;
+    //     _updateVideoPlayer();
     //   });
     // }
     return Scaffold(
@@ -69,25 +78,23 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                 fit: BoxFit.cover,
                 child: GestureDetector(
                   onTap: pausePlay,
-                  onVerticalDragUpdate: (details) {
-                    if (details.delta.dy > 0) {
+                  onVerticalDragEnd: (details) {
+                    double velocity = details.velocity.pixelsPerSecond.dy;
+                    if (velocity > 0) {
                       // Swiped down, move to previous video
                       setState(() {
-                        index = (index - 1);
-                        if (index < 0) {
-                          index = widget.videoUrls.length - 1;
+                        _index = (_index - 1);
+                        if (_index < 0) {
+                          _index = widget.videoUrls.length - 1;
                         }
-                        final oldController = _controller;
-                        _initializeVideoPlayer();
-                        oldController.dispose();
+                        _updateVideoPlayer();
                       });
-                    } else {
+                    }
+                    else {
                       // Swiped up, move to the next video
                       setState(() {
-                        index = (index + 1) % widget.videoUrls.length;
-                        final oldController = _controller;
-                        _initializeVideoPlayer();
-                        oldController.dispose();
+                        _index = (_index + 1) % widget.videoUrls.length;
+                        _updateVideoPlayer();
                       });
                     }
                   },
@@ -119,19 +126,9 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                                 children: [
                                   IconButton(
                                     onPressed: () {
-                                      setState(() {
-                                        _favorite++;
-                                      });
+                                      setState(() {});
                                     },
-                                    icon: Icon(
-                                      Icons.more_vert,
-                                      shadows: <Shadow>[
-                                        Shadow(
-                                            color:
-                                                Color.fromARGB(255, 13, 13, 13),
-                                            blurRadius: 5.0)
-                                      ],
-                                    ),
+                                    icon: const ColumnIcon(icon: Icons.more_vert),
                                     color: Colors.white,
                                     iconSize: _iconSize,
                                   ),
@@ -141,15 +138,7 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                                         _upvotes++;
                                       });
                                     },
-                                    icon: Icon(
-                                      Icons.arrow_upward,
-                                      shadows: <Shadow>[
-                                        Shadow(
-                                            color:
-                                                Color.fromARGB(255, 13, 13, 13),
-                                            blurRadius: 5.0)
-                                      ],
-                                    ),
+                                    icon: const ColumnIcon(icon: Icons.arrow_upward),
                                     color: Colors.white,
                                     iconSize: _iconSize,
                                   ),
@@ -166,44 +155,19 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                                         _upvotes--;
                                       });
                                     },
-                                    icon: Icon(
-                                      Icons.arrow_downward_outlined,
-                                      // opticalSize: 40.0,
-                                      shadows: <Shadow>[
-                                        Shadow(
-                                            color:
-                                                Color.fromARGB(255, 13, 13, 13),
-                                            blurRadius: 5.0)
-                                      ],
-                                    ),
+                                    icon: const ColumnIcon(icon: Icons.arrow_downward),
                                     color: Colors.white,
                                     iconSize: _iconSize,
                                   ),
                                   IconButton(
                                     onPressed: () {},
-                                    icon: Icon(
-                                      Icons.comment,
-                                      shadows: <Shadow>[
-                                        Shadow(
-                                            color:
-                                                Color.fromARGB(255, 13, 13, 13),
-                                            blurRadius: 5.0)
-                                      ],
-                                    ),
+                                    icon: const ColumnIcon(icon: Icons.comment),
                                     color: Colors.white,
                                     iconSize: _iconSize,
                                   ),
                                   IconButton(
                                     onPressed: () {},
-                                    icon: Icon(
-                                      Icons.share,
-                                      shadows: <Shadow>[
-                                        Shadow(
-                                            color:
-                                                Color.fromARGB(255, 13, 13, 13),
-                                            blurRadius: 5.0)
-                                      ],
-                                    ),
+                                    icon: const ColumnIcon(icon: Icons.share),
                                     color: Colors.white,
                                     iconSize: _iconSize,
                                   ),
@@ -229,6 +193,27 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
           color: Colors.black,
         ),
       ),
+    );
+  }
+}
+
+class ColumnIcon extends StatelessWidget {
+  const ColumnIcon({
+    super.key,
+    required IconData icon,
+  }) : _icon = icon;
+  final IconData _icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(
+      _icon,
+      shadows: <Shadow>[
+        Shadow(
+            color:
+                Color.fromARGB(255, 13, 13, 13),
+            blurRadius: 5.0)
+      ],
     );
   }
 }
