@@ -1,7 +1,5 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'dart:async';
 import 'settings.dart';
 
 /// Stateful widget to fetch and then display video content.
@@ -42,6 +40,7 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
     });
     _controller.setLooping(loop);
     _controller.play();
+    _controller.addListener(_onVideoPlayerUpdate);
   }
 
   void _updateVideoPlayer() {
@@ -49,10 +48,24 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
     _controller = VideoPlayerController.network(widget.videoUrls[_index]);
     _controller.initialize().then((_) {
       setState(() {});
+      // oldController.removeListener(_onVideoPlayerUpdate);
+      // _controller.addListener(_onVideoPlayerUpdate);
     });
     _controller.setLooping(true);
     _controller.play();
     oldController.dispose();
+  }
+
+  void _onVideoPlayerUpdate() {
+    final position = _controller.value.position;
+    final duration = _controller.value.duration;
+    if (position >= duration && _controller.value.isInitialized) {
+      print("Video player update: $position >= $duration");
+      setState(() {
+        _index = (_index + 1) % widget.videoUrls.length;
+        _updateVideoPlayer();
+      });
+    }
   }
 
   pausePlay() {
@@ -63,13 +76,6 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    // final settings = SettingsProvider.of(context).settings;
-    // if (_controller.value.duration - _controller.value.position < Duration(seconds: 1)) {
-    //   setState(() {
-    //     _index = (_index + 1) % widget.videoUrls.length;
-    //     _updateVideoPlayer();
-    //   });
-    // }
     return Scaffold(
       body: Center(
         child: _controller.value.isInitialized
@@ -89,8 +95,7 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                         }
                         _updateVideoPlayer();
                       });
-                    }
-                    else {
+                    } else {
                       // Swiped up, move to the next video
                       setState(() {
                         _index = (_index + 1) % widget.videoUrls.length;
@@ -128,7 +133,8 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                                     onPressed: () {
                                       setState(() {});
                                     },
-                                    icon: const ColumnIcon(icon: Icons.more_vert),
+                                    icon:
+                                        const ColumnIcon(icon: Icons.more_vert),
                                     color: Colors.white,
                                     iconSize: _iconSize,
                                   ),
@@ -138,7 +144,8 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                                         _upvotes++;
                                       });
                                     },
-                                    icon: const ColumnIcon(icon: Icons.arrow_upward),
+                                    icon: const ColumnIcon(
+                                        icon: Icons.arrow_upward),
                                     color: Colors.white,
                                     iconSize: _iconSize,
                                   ),
@@ -155,7 +162,8 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                                         _upvotes--;
                                       });
                                     },
-                                    icon: const ColumnIcon(icon: Icons.arrow_downward),
+                                    icon: const ColumnIcon(
+                                        icon: Icons.arrow_downward),
                                     color: Colors.white,
                                     iconSize: _iconSize,
                                   ),
@@ -209,10 +217,7 @@ class ColumnIcon extends StatelessWidget {
     return Icon(
       _icon,
       shadows: <Shadow>[
-        Shadow(
-            color:
-                Color.fromARGB(255, 13, 13, 13),
-            blurRadius: 5.0)
+        Shadow(color: Color.fromARGB(255, 13, 13, 13), blurRadius: 5.0)
       ],
     );
   }

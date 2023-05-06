@@ -59,7 +59,7 @@ class _MyAppState extends State<MyApp> {
         themeMode: _theme,
         // The initial screen of the application
         // to change. for debug only
-        initialRoute: '/login',
+        initialRoute: '/home',
         routes: {
           '/login': (context) => LoginPage(),
           '/home': (context) => const MyHomePage(title: 'Educlip'),

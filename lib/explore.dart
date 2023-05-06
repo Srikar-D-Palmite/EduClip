@@ -1,5 +1,7 @@
-import 'package:edu_clip/grid_view.dart';
+import 'package:edu_clip/video_grid.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Explore extends StatefulWidget {
   Explore({
@@ -11,16 +13,31 @@ class Explore extends StatefulWidget {
 }
 
 class _ExploreState extends State<Explore> {
-  // Random list of videos (to be changed later)
-  final List<String> _videoUrls = [
-    'https://media.istockphoto.com/id/1449673113/video/drone-view-of-van-point-brittany-france.mp4?s=mp4-640x640-is&k=20&c=YSIrsLs9VdrGDbazjN74UMtKMXggD_x3VBgj7Lt-jpE=',
-    'https://media.istockphoto.com/id/1435810600/video/hand-choosing-smile-face-from-emotion-block-customer-review-good-experience-positive-feedback.mp4?s=mp4-640x640-is&k=20&c=6qpiKhW8PxrvX5Me9dQSZUaveVFhVYatIWAN-PvlEG0=',
-    'https://media.istockphoto.com/id/1410075891/video/aerial-shot-of-the-verdon-gorge-in-provence-france.mp4?s=mp4-640x640-is&k=20&c=BJ8P1a-NpK_4hNKA5qQ8YtRLg22DxMuoFSayvSFeEyk=',
-    'https://media.istockphoto.com/id/1380176517/video/picturesque-white-mountain-slopes-covered-with-pine-forests-and-skiing-pistes-and-moving.mp4?s=mp4-640x640-is&k=20&c=nq_sMpw-d103WEDzM2LSLkxLIpRa7sGeL2dcL2RFd3w=',
-    'https://media.istockphoto.com/id/1410582936/video/flamingo.mp4?s=mp4-640x640-is&k=20&c=z77sqHUh6JF-_BZiTzUolBz0uNITJjEPfxbv95cRqC4=',
-  ];
-
+  // late Reference storageRef;
+  // Reference? imagesRef;
+  late FirebaseFirestore db;
+  late List<String> _videoKeys = [];
+  late Future<QuerySnapshot<Map<String, dynamic>>> querySnapshot;
   final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // pointer to storage
+    // storageRef = FirebaseStorage.instance.ref();
+    // imagesRef = storageRef.child("videos");
+    db = FirebaseFirestore.instance;
+    getVideos();
+  }
+
+  void getVideos() async {
+    try {
+      querySnapshot = FirebaseFirestore.instance.collection("videos").get();
+    } catch (e) {
+      print('Error loading videos: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +53,32 @@ class _ExploreState extends State<Explore> {
                 SearchBar(controller: _controller),
                 // Spacing after search box. Documentation provided by Srikar T.
                 const SizedBox(height: 10),
+                // Text("${_videoKeys.length} results found: ${_videoKeys[0]}",),
               ],
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // grid of videos
-                    VideoGrid(videoUrls: _videoUrls),
-                  ],
-                ),
-              ),
+              child: FutureBuilder<QuerySnapshot>(
+                  future: querySnapshot,
+                  builder: (context, AsyncSnapshot snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.hasData) {
+                      snapshot.data!.docs.forEach((DocumentSnapshot doc) async {
+                        _videoKeys.add(doc.id);
+                      });
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            // grid of videos
+                            VideoGrid(videoKeys: _videoKeys),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  }),
             ),
           ],
         ),
