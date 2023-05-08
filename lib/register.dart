@@ -237,36 +237,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
-  // void _submitForm(BuildContext context) async {
-  //   String errorMessage;
-  //   final form = _formKey.currentState!;
-  //   if (form.validate()) {
-  //     form.save();
-  //     try {
-  //       await FirebaseAuth.instance
-  //           .createUserWithEmailAndPassword(email: _email, password: _password);
-  //       setState(() {
-  //         _errorMessage = '';
-  //       });
-  //       Navigator.of(context).pushReplacementNamed('/home');
-  //     } on FirebaseAuthException catch (e) {
-  //       if (e.code == 'email-already-in-use') {
-  //         errorMessage = "Email already in use";
-  //         // ScaffoldMessenger.of(context)
-  //         //     .showSnackBar(SnackBar(content: Text('Email already in use')));
-  //       } else if (e.code == 'username-already-in-use') {
-  //         errorMessage = "Username already in use";
-  //       } else {
-  //         // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         //     content: Text('An error occurred. Please try again later.')));
-  //         errorMessage = 'An error occurred. Please try again later.';
-  //       }
-  //       setState(() {
-  //         _errorMessage = errorMessage;
-  //       });
-  //     }
-  //   }
-  // }
   void _submitForm(BuildContext context) async {
     String errorMessage;
     final form = _formKey.currentState!;
@@ -282,19 +252,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
         setState(() {
           _errorMessage = errorMessage;
         });
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //   content: Text(errorMessage),
-        // ));
       } else {
         try {
+          // Create a new user in Firebase Authentication
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
               email: _email, password: _password);
-          // Add the new user to Firestore
+          // Add the new user to Firestore database users collection (table)
           await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
             'email': _email,
             'firstName': _firstName,
             'lastName': _lastName,
             'username': _username,
+            'createdAt': DateTime.now(),
+            'followers': 0,
+            'following': 0,
           });
           setState(() {
             _errorMessage = '';
@@ -309,9 +280,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
           setState(() {
             _errorMessage = errorMessage;
           });
-          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          //   content: Text(errorMessage),
-          // ));
         }
       }
     }

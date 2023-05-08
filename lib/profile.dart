@@ -112,29 +112,7 @@ class ProfileInfo extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
         const SizedBox(height: 10.0),
-        FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance
-                .collection('users')
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .get(),
-            builder: (BuildContext context,
-                AsyncSnapshot<DocumentSnapshot> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              }
-              if (snapshot.hasError) {
-                return const Text('Error');
-              }
-              final Map<String, dynamic> data =
-                  snapshot.data?.data()! as Map<String, dynamic>;
-              return Text(
-                "@${data['username'] ?? 0}",
-                style: const TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.grey,
-                ),
-              );
-            }),
+        LoadProfileInfo(),
         const SizedBox(height: 20.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -154,6 +132,56 @@ class ProfileInfo extends StatelessWidget {
         ),
         const SizedBox(height: 30.0),
       ],
+    );
+  }
+}
+
+class LoadProfileInfo extends StatelessWidget {
+  const LoadProfileInfo({
+    super.key,
+    // required this.child,
+  });
+  // final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get(),
+        builder: (BuildContext context,
+            AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+          if (snapshot.hasError) {
+            return const Text('Error');
+          }
+          final Map<String, dynamic> data =
+              snapshot.data?.data()! as Map<String, dynamic>;
+          // return child;
+          return UserName(data: data);
+        });
+  }
+}
+
+class UserName extends StatelessWidget {
+  const UserName({
+    super.key,
+    required this.data,
+  });
+
+  final Map<String, dynamic> data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      "@${data['username'] ?? 0}",
+      style: const TextStyle(
+        fontSize: 16.0,
+        color: Colors.grey,
+      ),
     );
   }
 }

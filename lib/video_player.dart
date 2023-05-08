@@ -125,59 +125,70 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                             child: Container(
                               // color: Colors.black.withOpacity(0.5),
                               padding: EdgeInsets.only(left: 230),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                // crossAxisAlignment: CrossAxisAlignment.end,
+                              child: Row(
                                 children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {});
-                                    },
-                                    icon:
-                                        const ColumnIcon(icon: Icons.more_vert),
-                                    color: Colors.white,
-                                    iconSize: _iconSize,
+                                  Column(
+                                    children: [
+                                      SizedBox(height: 280),
+                                      Text("Description"),
+                                    ],
                                   ),
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _upvotes++;
-                                      });
-                                    },
-                                    icon: const ColumnIcon(
-                                        icon: Icons.arrow_upward),
-                                    color: Colors.white,
-                                    iconSize: _iconSize,
-                                  ),
-                                  Text(
-                                    '$_upvotes',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    highlightColor: Colors.red,
-                                    onPressed: () {
-                                      setState(() {
-                                        _upvotes--;
-                                      });
-                                    },
-                                    icon: const ColumnIcon(
-                                        icon: Icons.arrow_downward),
-                                    color: Colors.white,
-                                    iconSize: _iconSize,
-                                  ),
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: const ColumnIcon(icon: Icons.comment),
-                                    color: Colors.white,
-                                    iconSize: _iconSize,
-                                  ),
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: const ColumnIcon(icon: Icons.share),
-                                    color: Colors.white,
-                                    iconSize: _iconSize,
+                                  SizedBox(width: 100),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    // crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {});
+                                        },
+                                        icon:
+                                            const ColumnIcon(icon: Icons.more_vert),
+                                        color: Colors.white,
+                                        iconSize: _iconSize,
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _upvotes++;
+                                          });
+                                        },
+                                        icon: const ColumnIcon(
+                                            icon: Icons.arrow_upward),
+                                        color: Colors.white,
+                                        iconSize: _iconSize,
+                                      ),
+                                      Text(
+                                        '$_upvotes',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        highlightColor: Colors.red,
+                                        onPressed: () {
+                                          setState(() {
+                                            _upvotes--;
+                                          });
+                                        },
+                                        icon: const ColumnIcon(
+                                            icon: Icons.arrow_downward),
+                                        color: Colors.white,
+                                        iconSize: _iconSize,
+                                      ),
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: const ColumnIcon(icon: Icons.comment),
+                                        color: Colors.white,
+                                        iconSize: _iconSize,
+                                      ),
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: const ColumnIcon(icon: Icons.share),
+                                        color: Colors.white,
+                                        iconSize: _iconSize,
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
