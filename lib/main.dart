@@ -5,14 +5,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // other parts of the app
-// import 'grid_view.dart';
 import 'profile.dart';
 import 'explore.dart';
 import 'login.dart';
-// import 'messages.dart';
-import 'video_player.dart';
 import 'notifications.dart';
 import 'authentication.dart';
+import 'settings.dart';
+import 'change_password.dart';
+import 'sendmessage.dart';
+import 'reset_password.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -33,37 +34,45 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ThemeMode _theme = ThemeMode.light;
+  Settings settings = Settings(
+      autoScrollEnabled: false,
+      darkModeEnabled: false,
+      notificationsEnabled: true);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      // The title of the application
-      title: 'Educlip',
-      // The color theme of the application
-      theme: ThemeData(
-        //primaryColor: Colors.black,
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: const Color.fromARGB(255, 84, 180, 211),
-          secondary: const Color.fromARGB(255, 84, 180, 211),
-          brightness: Brightness.light,
-        ),
-
-        // accentColor: Colors.white,
-      ),
-      darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: Colors.white,
-        secondary: Colors.black,
-        brightness: Brightness.dark,
-      )),
-      themeMode: _theme,
-      // The initial screen of the application
-      //home: const MyHomePage(title: 'Educlip'),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => LoginPage(),
-        '/home': (context) => const MyHomePage(title: 'Educlip'),
+    return SettingsProvider(
+      settings: settings,
+      updateSettings: (newSettings) {
+        settings.darkModeEnabled = newSettings.darkModeEnabled;
       },
+      child: MaterialApp(
+        // The title of the application
+        title: 'Educlip',
+        // The color theme of the application
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+            primary: const Color.fromARGB(255, 84, 180, 211),
+            secondary: const Color.fromARGB(255, 84, 180, 211),
+            brightness: Brightness.light,
+          ),
+        ),
+        darkTheme: ThemeData(
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+          primary: Colors.white,
+          secondary: Colors.black,
+          brightness: Brightness.dark,
+        )),
+        themeMode: _theme,
+        // The initial screen of the application
+        initialRoute: '/login',
+        routes: {
+          '/login': (context) => LoginPage(),
+          '/home': (context) => const MyHomePage(title: 'Educlip'),
+          '/verify': (context) => VerifyScreen(),
+          '/change': (context) => ChangePasswordPage(),
+        },
+      ),
     );
   }
 

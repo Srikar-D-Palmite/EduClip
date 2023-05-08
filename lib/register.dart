@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'authentication.dart';
 // import 'login.dart';
+import 'login.dart';
+import 'sendmessage.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);
@@ -14,6 +16,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
   late String _email, _password, _firstName, _lastName, _username;
   bool _showPassword = false;
+  String _errorMessage = '';
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -62,30 +65,63 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 15.0),
-                TextFormField(
-                  validator: (value) =>
-                      value!.isEmpty ? 'Name can\'t be empty' : null,
-                  onSaved: (value) => {
-                    _firstName = value!.split(' ')[0],
-                    _lastName = value.split(' ')[1],
-                  },
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: 'Full Name',
-                    contentPadding: const EdgeInsets.all(16.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide:
-                          const BorderSide(width: 0.0, color: Colors.black),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        validator: (value) => value!.isEmpty
+                            ? 'First Name can\'t be empty'
+                            : null,
+                        onSaved: (value) => {
+                          _firstName = value!,
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          hintText: 'First Name',
+                          contentPadding: const EdgeInsets.all(16.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(
+                                width: 0.0, color: Colors.black),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(
+                                width: 0.0, color: Colors.black),
+                          ),
+                        ),
+                      ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide:
-                          const BorderSide(width: 0.0, color: Colors.black),
+                    const SizedBox(height: 15.0, width: 15.0),
+                    Expanded(
+                      child: TextFormField(
+                        validator: (value) =>
+                            value!.isEmpty ? 'Last Name can\'t be empty' : null,
+                        onSaved: (value) => {
+                          _lastName = value!,
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          hintText: 'Last Name',
+                          contentPadding: const EdgeInsets.all(16.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(
+                                width: 0.0, color: Colors.black),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(
+                                width: 0.0, color: Colors.black),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
                 const SizedBox(height: 15.0),
                 TextFormField(
@@ -139,6 +175,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                 ),
                 const SizedBox(height: 15.0),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _errorMessage,
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
                 // TextFormField(
                 //   obscureText: !_showPassword,
                 //   // not working
@@ -167,7 +215,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 //     ),
                 //   ),
                 // ),
-                // const SizedBox(height: 15.0),
+                const SizedBox(height: 15.0),
                 TextButton(
                   onPressed: () => _submitForm(context),
                   style: TextButton.styleFrom(
@@ -176,7 +224,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     //   color: Colors.black,
                     //   fontWeight: FontWeight.bold,
                     // ),
-                    primary: Colors.white,
+                    //primary: Colors.white,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0)),
                     minimumSize: const Size.fromHeight(50.0),
@@ -200,32 +249,85 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
+  // void _submitForm(BuildContext context) async {
+  //   String errorMessage;
+  //   final form = _formKey.currentState!;
+  //   if (form.validate()) {
+  //     form.save();
+  //     try {
+  //       await FirebaseAuth.instance
+  //           .createUserWithEmailAndPassword(email: _email, password: _password);
+  //       setState(() {
+  //         _errorMessage = '';
+  //       });
+  //       Navigator.of(context).pushReplacementNamed('/home');
+  //     } on FirebaseAuthException catch (e) {
+  //       if (e.code == 'email-already-in-use') {
+  //         errorMessage = "Email already in use";
+  //         // ScaffoldMessenger.of(context)
+  //         //     .showSnackBar(SnackBar(content: Text('Email already in use')));
+  //       } else if (e.code == 'username-already-in-use') {
+  //         errorMessage = "Username already in use";
+  //       } else {
+  //         // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //         //     content: Text('An error occurred. Please try again later.')));
+  //         errorMessage = 'An error occurred. Please try again later.';
+  //       }
+  //       setState(() {
+  //         _errorMessage = errorMessage;
+  //       });
+  //     }
+  //   }
+  // }
   void _submitForm(BuildContext context) async {
+    String errorMessage;
     final form = _formKey.currentState!;
     if (form.validate()) {
       form.save();
-      try {
-        // register account
-        await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: _email, password: _password);
-        // write user data in database
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .set({
-          'email': _email,
-          'firstName': _firstName,
-          'lastName': _lastName,
-          'username': _username,
+      // Check if the username already exists in Firestore
+      final usernameSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: _username)
+          .get();
+      if (usernameSnapshot.docs.isNotEmpty) {
+        errorMessage = 'Username already exists';
+        setState(() {
+          _errorMessage = errorMessage;
         });
-        // sign in
-        await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: _email, password: _password);
-        //.onError((e, _) => print("Error writing document: $e"));
-        Navigator.of(context).pushReplacementNamed('/home');
-      } catch (e) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content: Text(errorMessage),
+        // ));
+      } else {
+        try {
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+              email: _email, password: _password);
+          // Add the new user to Firestore
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .set({
+            'email': _email,
+            'firstName': _firstName,
+            'lastName': _lastName,
+            'username': _username,
+          });
+          setState(() {
+            _errorMessage = '';
+          });
+          Navigator.of(context).pushReplacementNamed('/verify');
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'email-already-in-use') {
+            errorMessage = 'Email already in use';
+          } else {
+            errorMessage = 'An error occurred. Please try again later.';
+          }
+          setState(() {
+            _errorMessage = errorMessage;
+          });
+          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          //   content: Text(errorMessage),
+          // ));
+        }
       }
     }
   }

@@ -47,6 +47,7 @@ dependencies:
   #new
   video_player: ^2.6.0
   video_thumbnail: ^0.5.3
+  firebase_storage: ^11.1.1
 
 dev_dependencies:
   flutter_test:
@@ -99,6 +100,10 @@ flutter:
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,
+<<<<<<< HEAD
   # see https://flutter.dev/custom-fonts/#from-packages
     - assets/
     #this is for the firebase and google icons
+=======
+  # see https://flutter.dev/custom-fonts/#from-packages
+>>>>>>> da6204c27a1457001f217797dfa6e7ffc6041b83

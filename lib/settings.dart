@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'change_password.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -10,17 +11,24 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = false;
+  bool _autoScrollEnabled = false;
 
   @override
   Widget build(BuildContext context) {
+    final settings = SettingsProvider.of(context).settings;
+    final updateSettings = SettingsProvider.of(context).updateSettings;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings',style:TextStyle(color: Theme.of(context).brightness == Brightness.dark
+        title: Text('Settings',
+            style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black)),
+        iconTheme: IconThemeData(
+            color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white
-                : Colors.black)),
-                iconTheme: IconThemeData(color:Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black ),
+                : Colors.black),
         backgroundColor: Theme.of(context).colorScheme.secondary,
       ),
       body: Column(
@@ -47,11 +55,23 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           SwitchListTile(
             title: const Text('Dark Mode'),
-            value: (_darkModeEnabled = Theme.of(context).brightness == Brightness.dark),
+            value: (_darkModeEnabled =
+                Theme.of(context).brightness == Brightness.dark),
             onChanged: (bool value) {
               setState(() {
                 _darkModeEnabled = value;
                 _toggleDarkMode(value);
+              });
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Autoscroll'),
+            value: settings.autoScrollEnabled,
+            onChanged: (bool value) {
+              setState(() {
+                _autoScrollEnabled = value;
+                settings.autoScrollEnabled = value;
+                updateSettings(settings.copyWith(autoScrollEnabled: value));
               });
             },
           ),
@@ -67,16 +87,19 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           ListTile(
             title: Text('Change Password'),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).pushReplacementNamed('/change');
+            },
           ),
           ListTile(
             title: Text('Logout'),
-            onTap: () {_logout(context);},
+            onTap: () {
+              _logout(context);
+            },
           ),
         ],
       ),
     );
-    
   }
 
   void _toggleDarkMode(bool darkModeEnabled) {
@@ -97,5 +120,50 @@ class _SettingsPageState extends State<SettingsPage> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
+  }
+}
+
+class Settings {
+  late bool notificationsEnabled;
+  late bool darkModeEnabled;
+  late bool autoScrollEnabled;
+
+  Settings({
+    required this.notificationsEnabled,
+    required this.darkModeEnabled,
+    required this.autoScrollEnabled,
+  });
+
+  Settings copyWith({
+    bool? darkModeEnabled,
+    bool? notificationsEnabled,
+    bool? autoScrollEnabled,
+  }) {
+    return Settings(
+      darkModeEnabled: darkModeEnabled ?? this.darkModeEnabled,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
+      autoScrollEnabled: autoScrollEnabled ?? this.autoScrollEnabled,
+    );
+  }
+}
+
+class SettingsProvider extends InheritedWidget {
+  final Settings settings;
+  final Function(Settings) updateSettings;
+
+  SettingsProvider({
+    Key? key,
+    required Widget child,
+    required this.settings,
+    required this.updateSettings,
+  }) : super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(SettingsProvider oldWidget) {
+    return oldWidget.settings != settings;
+  }
+
+  static SettingsProvider of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<SettingsProvider>()!;
   }
 }
