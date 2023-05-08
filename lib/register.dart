@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'login.dart';
+import 'sendmessage.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);
@@ -290,7 +291,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
               email: _email, password: _password);
           // Add the new user to Firestore
-          await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .set({
             'email': _email,
             'firstName': _firstName,
             'lastName': _lastName,
@@ -299,7 +303,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           setState(() {
             _errorMessage = '';
           });
-          Navigator.of(context).pushReplacementNamed('/home');
+          Navigator.of(context).pushReplacementNamed('/verify');
         } on FirebaseAuthException catch (e) {
           if (e.code == 'email-already-in-use') {
             errorMessage = 'Email already in use';

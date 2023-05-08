@@ -2,23 +2,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:edu_clip/grid_view.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
+
 import 'settings.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
+
 // The profile page should be expanded later on and modified. It should also be replicable so that it may be used for other people's profiles also
 class _ProfilePageState extends State<ProfilePage> {
   // ProfilePage({
   //   super.key,
   // });
   User? user;
+
   // Random list of videos (to be changed later)
   final List<String> _videoUrls = [
-    // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-    // 'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+    'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
     'https://media.istockphoto.com/id/1449673113/video/drone-view-of-van-point-brittany-france.mp4?s=mp4-640x640-is&k=20&c=YSIrsLs9VdrGDbazjN74UMtKMXggD_x3VBgj7Lt-jpE=',
     'https://media.istockphoto.com/id/1435810600/video/hand-choosing-smile-face-from-emotion-block-customer-review-good-experience-positive-feedback.mp4?s=mp4-640x640-is&k=20&c=6qpiKhW8PxrvX5Me9dQSZUaveVFhVYatIWAN-PvlEG0=',
     'https://media.istockphoto.com/id/1410075891/video/aerial-shot-of-the-verdon-gorge-in-provence-france.mp4?s=mp4-640x640-is&k=20&c=BJ8P1a-NpK_4hNKA5qQ8YtRLg22DxMuoFSayvSFeEyk=',
@@ -33,49 +35,45 @@ class _ProfilePageState extends State<ProfilePage> {
     user = FirebaseAuth.instance.currentUser;
   }
 
- @override
- Widget build(BuildContext context) {
-  return Scaffold(
-    body: SafeArea(
-      child: CustomScrollView(
-        slivers: <Widget>[
-          SliverPersistentHeader(
-              pinned: true, // Whether to keep the panel pinned to the top of the screen as you scroll.
-              delegate: _MyPanelDelegate(
-                minHeight: 50.0, // The height of the panel when it's fully collapsed.
-                maxHeight: 500.0, // The height of the panel when it's fully expanded.
-              child: Column(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      const Text(
-                        "              ",
-                      ),
-                      const Text(
-                        'Profile',
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      // more button (takes user to settings)
-                      IconButton(
-                        icon: const Icon(Icons.more_horiz),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SettingsPage()),
-                          );
-                        },
-                      ),
-                    ],
+                  const Text(
+                    "              ",
                   ),
-                ),
-                  const SizedBox(height: 20.0),
+                  const Text(
+                    'Profile',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // more button (takes user to settings)
+                  IconButton(
+                    icon: const Icon(Icons.more_horiz),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SettingsPage()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
                   FutureBuilder<DocumentSnapshot>(
                       future: FirebaseFirestore.instance
                           .collection('users')
@@ -83,7 +81,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           .get(),
                       builder: (BuildContext context,
                           AsyncSnapshot<DocumentSnapshot> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const CircularProgressIndicator();
                         }
                         if (snapshot.hasError) {
@@ -104,9 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     radius: 50.0,
                     // to replace with user profile image
                     // backgroundImage: AssetImage('/images/avatar.png'),
-                    // backgroundImage: ,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primary,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(height: 10.0),
                   FutureBuilder<DocumentSnapshot>(
@@ -116,7 +113,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           .get(),
                       builder: (BuildContext context,
                           AsyncSnapshot<DocumentSnapshot> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const CircularProgressIndicator();
                         }
                         if (snapshot.hasError) {
@@ -152,48 +150,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-          ),
-          SliverFillRemaining(
-            child: VideoGrid(videoUrls: _videoUrls),
-          ),
-        ],
+            Expanded(child: VideoGrid(videoUrls: _videoUrls)),
+          ],
+        ),
       ),
-    ),
-  );
-}
-}
-
-class _MyPanelDelegate extends SliverPersistentHeaderDelegate {
-  final double minHeight;
-  final double maxHeight;
-  final Widget child;
-
-  _MyPanelDelegate({
-    required this.minHeight,
-    required this.maxHeight,
-    required this.child,
-  });
-
-  @override
-  double get minExtent => minHeight;
-
-  @override
-  double get maxExtent => math.max(maxHeight, minHeight);
-
-  @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    // Calculate the current height of the panel based on the shrinkOffset.
-    final height = math.max(maxHeight - shrinkOffset, minHeight);
-    // Return the child wrapped in a SizedBox with the calculated height.
-    return SizedBox(height: height, child: child);
-  }
-
-  @override
-  bool shouldRebuild(_MyPanelDelegate oldDelegate) {
-    // Return true to rebuild the panel if any of the delegate's properties change.
-    return minHeight != oldDelegate.minHeight ||
-        maxHeight != oldDelegate.maxHeight ||
-        child != oldDelegate.child;
+    );
   }
 }
 

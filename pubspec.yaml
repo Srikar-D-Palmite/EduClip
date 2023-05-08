@@ -41,6 +41,7 @@ dependencies:
   google_sign_in: ^4.4.4
   video_player: ^2.6.0
   video_thumbnail: ^0.5.3
+  firebase_storage: ^11.1.1
 
 dev_dependencies:
   flutter_test:

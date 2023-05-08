@@ -5,14 +5,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // other parts of the app
-// import 'grid_view.dart';
 import 'profile.dart';
 import 'explore.dart';
 import 'login.dart';
-// import 'messages.dart';
-import 'video_player.dart';
 import 'notifications.dart';
 import 'settings.dart';
+import 'change_password.dart';
+import 'sendmessage.dart';
+import 'reset_password.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -33,7 +33,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ThemeMode _theme = ThemeMode.light;
-  Settings settings = Settings(autoScrollEnabled: false, darkModeEnabled: false, notificationsEnabled: true);
+  Settings settings = Settings(
+      autoScrollEnabled: false,
+      darkModeEnabled: false,
+      notificationsEnabled: true);
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +64,12 @@ class _MyAppState extends State<MyApp> {
         )),
         themeMode: _theme,
         // The initial screen of the application
-        // to change. for debug only
         initialRoute: '/login',
         routes: {
           '/login': (context) => LoginPage(),
           '/home': (context) => const MyHomePage(title: 'Educlip'),
+          '/verify': (context) => VerifyScreen(),
+          '/change': (context) => ChangePasswordPage(),
         },
       ),
     );

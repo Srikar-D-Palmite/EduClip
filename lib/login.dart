@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'register.dart';
+import 'reset_password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -52,6 +53,22 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     child: const Text(
                       "Don't have an account? Sign up",
+                      // style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ResetScreenPage(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "Forgot Password ?",
                       // style: TextStyle(color: Colors.black),
                     ),
                   ),
