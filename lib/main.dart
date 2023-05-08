@@ -12,6 +12,7 @@ import 'login.dart';
 // import 'messages.dart';
 import 'video_player.dart';
 import 'notifications.dart';
+import 'authentication.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -40,15 +41,15 @@ class _MyAppState extends State<MyApp> {
       title: 'Educlip',
       // The color theme of the application
       theme: ThemeData(
-          //primaryColor: Colors.black,
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: const Color.fromARGB(255, 84, 180, 211),
-        secondary: const Color.fromARGB(255, 84, 180, 211),
-        brightness: Brightness.light,
+        //primaryColor: Colors.black,
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          primary: const Color.fromARGB(255, 84, 180, 211),
+          secondary: const Color.fromARGB(255, 84, 180, 211),
+          brightness: Brightness.light,
+        ),
+
+        // accentColor: Colors.white,
       ),
-      
-          // accentColor: Colors.white,
-          ),
       darkTheme: ThemeData(
           colorScheme: ColorScheme.fromSwatch().copyWith(
         primary: Colors.white,
@@ -122,7 +123,6 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
   ];
 
-
   // This function is called when a tab is tapped. It updates the index of the currently selected tab
   void _onItemTapped(int index) {
     setState(() {
@@ -173,7 +173,6 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
-          
         ],
         // The index of the currently selected tab
         currentIndex: _selectedIndex,

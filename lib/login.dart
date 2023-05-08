@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'register.dart';
+import 'authentication.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -173,6 +174,15 @@ class _LoginFormState extends State<LoginForm> {
               ),
               child: const Text('Log in'),
             ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // existing form fields
+                const SizedBox(height: 15.0),
+                GoogleSignInButton(),
+                // existing buttons
+              ],
+            ),
             const SizedBox(height: 15.0),
           ],
         ),
@@ -213,5 +223,106 @@ class _LoginFormState extends State<LoginForm> {
         });
       }
     }
+  }
+}
+
+class SignInScreen extends StatefulWidget {
+  @override
+  _SignInScreenState createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: FutureBuilder(
+            future: Authentication.initializeFirebase(context: context),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Text('Error initializing Firebase');
+              } else if (snapshot.connectionState == ConnectionState.done) {
+                return GoogleSignInButton();
+              }
+              return CircularProgressIndicator();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class GoogleSignInButton extends StatefulWidget {
+  @override
+  _GoogleSignInButtonState createState() => _GoogleSignInButtonState();
+}
+
+class _GoogleSignInButtonState extends State<GoogleSignInButton> {
+  bool _isSigningIn = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: _isSigningIn
+          ? CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            )
+          : OutlinedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.white),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                ),
+              ),
+              onPressed: () async {
+                setState(() {
+                  _isSigningIn = true;
+                });
+
+                User? user =
+                    await Authentication.signInWithGoogle(context: context);
+
+                // TODO: Add a method call to the Google Sign-In authentication
+
+                setState(() {
+                  _isSigningIn = false;
+                });
+                User? user1 = FirebaseAuth.instance.currentUser;
+
+                if (user1 != null) {
+                  Navigator.of(context).pushReplacementNamed('/home');
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Image(
+                      image: AssetImage("assets/google_logo.png"),
+                      height: 35.0,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Text(
+                        'Sign in with Google',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+    );
   }
 }

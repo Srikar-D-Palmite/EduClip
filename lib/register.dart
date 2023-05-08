@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'authentication.dart';
 // import 'login.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -182,6 +183,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                   child: const Text('Sign up'),
                 ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // existing form fields
+                    const SizedBox(height: 15.0),
+                    GoogleSignInButton(),
+                    // existing buttons
+                  ],
+                ),
               ],
             ),
           ),
@@ -199,7 +209,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
         await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: _email, password: _password);
         // write user data in database
-        FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .set({
           'email': _email,
           'firstName': _firstName,
           'lastName': _lastName,
@@ -215,5 +228,115 @@ class _RegistrationPageState extends State<RegistrationPage> {
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
+  }
+}
+
+class SignInScreen extends StatefulWidget {
+  @override
+  _SignInScreenState createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: FutureBuilder(
+            future: Authentication.initializeFirebase(context: context),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Text('Error initializing Firebase');
+              } else if (snapshot.connectionState == ConnectionState.done) {
+                return GoogleSignInButton();
+              }
+              return CircularProgressIndicator();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class GoogleSignInButton extends StatefulWidget {
+  @override
+  _GoogleSignInButtonState createState() => _GoogleSignInButtonState();
+}
+
+class _GoogleSignInButtonState extends State<GoogleSignInButton> {
+  bool _isSigningIn = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: _isSigningIn
+          ? CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            )
+          : OutlinedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.white),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                ),
+              ),
+              onPressed: () async {
+                setState(() {
+                  _isSigningIn = true;
+                });
+
+                User? user =
+                    await Authentication.signInWithGoogle(context: context);
+
+                FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .set({
+                  'email': FirebaseAuth.instance.currentUser!.email,
+                  'firstName': "Srikar",
+                  'lastName': "Tadeparti",
+                  'username': "glintingcarp",
+                });
+                // TODO: Add a method call to the Google Sign-In authentication
+
+                setState(() {
+                  _isSigningIn = false;
+                });
+                User? user1 = FirebaseAuth.instance.currentUser;
+
+                if (user1 != null) {
+                  Navigator.of(context).pushReplacementNamed('/home');
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Image(
+                      image: AssetImage("assets/google_logo.png"),
+                      height: 35.0,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Text(
+                        'Sign in with Google',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+    );
   }
 }
