@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'change_password.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -86,7 +87,9 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           ListTile(
             title: Text('Change Password'),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).pushReplacementNamed('/change');
+            },
           ),
           ListTile(
             title: Text('Logout'),

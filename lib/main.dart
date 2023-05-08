@@ -9,7 +9,11 @@ import 'profile.dart';
 import 'explore.dart';
 import 'login.dart';
 import 'notifications.dart';
+import 'authentication.dart';
 import 'settings.dart';
+import 'change_password.dart';
+import 'sendmessage.dart';
+import 'reset_password.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -30,7 +34,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ThemeMode _theme = ThemeMode.light;
-  Settings settings = Settings(autoScrollEnabled: false, darkModeEnabled: false, notificationsEnabled: true);
+  Settings settings = Settings(
+      autoScrollEnabled: false,
+      darkModeEnabled: false,
+      notificationsEnabled: true);
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +69,8 @@ class _MyAppState extends State<MyApp> {
         routes: {
           '/login': (context) => LoginPage(),
           '/home': (context) => const MyHomePage(title: 'Educlip'),
+          '/verify': (context) => VerifyScreen(),
+          '/change': (context) => ChangePasswordPage(),
         },
       ),
     );
