@@ -1,10 +1,10 @@
-import 'package:edu_clip/main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'main.dart';
 
 class Authentication {
   static Future<FirebaseApp> initializeFirebase(
@@ -32,16 +32,98 @@ class Authentication {
     );
   }
 
-  static Future<User?> signInWithGoogle({required BuildContext context}) async {
+  static Future<int> signUpWithGoogle({required BuildContext context}) async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+
+    GoogleSignIn googleSignIn = GoogleSignIn();
+
+    GoogleSignInAccount? googleSignInAccount;
+
+    googleSignInAccount = await googleSignIn.signIn();
+
+    if (googleSignInAccount != null) {
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+
+      final AuthCredential authCredential = GoogleAuthProvider.credential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken);
+
+      // Getting users credential
+      UserCredential result = await auth.signInWithCredential(authCredential);
+      User? user = result.user;
+
+      if (user != null && user.email != null && user.displayName != null) {
+        String? username = user.email?.split("@")[0];
+
+        final emailSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: user.email)
+            .get();
+
+        if (emailSnapshot.docs.isNotEmpty) {
+          return -1;
+        }
+
+        final usernameSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('username', isEqualTo: username)
+            .get();
+
+        var userId = FieldValue.increment(1);
+        if (usernameSnapshot.docs.isNotEmpty) {
+          username = "$username$userId";
+        }
+
+        List<String>? names = user.displayName?.split(" ");
+
+        if (names != null) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .set({
+            'userId': userId,
+            'email': user.email,
+            'firstName': names[0],
+            'lastName': names.length > 1 ? names[1] : "",
+            'username': user.email?.split("@")[0],
+            'createdAt': DateTime.now(),
+            'followers': 0,
+            'following': 0,
+          });
+        }
+      }
+
+      return 0;
+    }
+
+    return -2;
+  }
+
+  static Future<int> signInWithGoogle({required BuildContext context}) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
 
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
+    GoogleSignInAccount? googleSignInAccount;
+
+    try {
+      googleSignInAccount = await googleSignIn.signIn();
+    } on PlatformException catch (e) {
+      print(e);
+      return -1;
+    }
 
     if (googleSignInAccount != null) {
+      var x = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: googleSignInAccount.email)
+          .get();
+      if (x.docs.isEmpty) {
+        return -1;
+      }
+
       final GoogleSignInAuthentication googleSignInAuthentication =
           await googleSignInAccount.authentication;
 
@@ -82,7 +164,7 @@ class Authentication {
       }
     }
 
-    return user;
+    return 0;
   }
 
   static Future<void> signOut({required BuildContext context}) async {

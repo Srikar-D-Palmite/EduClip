@@ -234,10 +234,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+                  children: const [
                     // existing form fields
-                    const SizedBox(height: 15.0),
-                    GoogleSignInButton(),
+                    SizedBox(height: 15.0),
+                    GoogleSignUpButton(),
                     // existing buttons
                   ],
                 ),
@@ -259,43 +259,59 @@ class _RegistrationPageState extends State<RegistrationPage> {
           .collection('users')
           .where('username', isEqualTo: _username)
           .get();
+
       if (usernameSnapshot.docs.isNotEmpty) {
         errorMessage = 'Username already exists';
         setState(() {
           _errorMessage = errorMessage;
         });
-      } else {
-        try {
-          // Create a new user in Firebase Authentication
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: _email, password: _password);
-          // Add the new user to Firestore
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .set({
-            'email': _email,
-            'firstName': _firstName,
-            'lastName': _lastName,
-            'username': _username,
-            'createdAt': DateTime.now(),
-            'followers': 0,
-            'following': 0,
-          });
-          setState(() {
-            _errorMessage = '';
-          });
-          Navigator.of(context).pushReplacementNamed('/verify');
-        } on FirebaseAuthException catch (e) {
-          if (e.code == 'email-already-in-use') {
-            errorMessage = 'Email already in use';
-          } else {
-            errorMessage = 'An error occurred. Please try again later.';
-          }
-          setState(() {
-            _errorMessage = errorMessage;
-          });
+        return;
+      }
+
+      final emailSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: _email)
+          .get();
+
+      if (emailSnapshot.docs.isNotEmpty) {
+        errorMessage = 'Email already exists';
+        setState(() {
+          _errorMessage = errorMessage;
+        });
+        return;
+      }
+
+      try {
+        // Create a new user in Firebase Authentication
+        await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: _email, password: _password);
+        // Add the new user to Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .set({
+          'userId': FieldValue.increment(1),
+          'email': _email,
+          'firstName': _firstName,
+          'lastName': _lastName,
+          'username': _username,
+          'createdAt': DateTime.now(),
+          'followers': 0,
+          'following': 0,
+        });
+        setState(() {
+          _errorMessage = '';
+        });
+        Navigator.of(context).pushReplacementNamed('/verify');
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'email-already-in-use') {
+          errorMessage = 'Email already in use';
+        } else {
+          errorMessage = 'An error occurred. Please try again later.';
         }
+        setState(() {
+          _errorMessage = errorMessage;
+        });
       }
     }
   }
@@ -329,12 +345,14 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 }
 
-class GoogleSignInButton extends StatefulWidget {
+class GoogleSignUpButton extends StatefulWidget {
+  const GoogleSignUpButton({super.key});
+
   @override
-  _GoogleSignInButtonState createState() => _GoogleSignInButtonState();
+  _GoogleSignUpButtonState createState() => _GoogleSignUpButtonState();
 }
 
-class _GoogleSignInButtonState extends State<GoogleSignInButton> {
+class _GoogleSignUpButtonState extends State<GoogleSignUpButton> {
   bool _isSigningIn = false;
 
   @override
@@ -342,7 +360,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: _isSigningIn
-          ? CircularProgressIndicator(
+          ? const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             )
           : OutlinedButton(
@@ -359,28 +377,33 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                   _isSigningIn = true;
                 });
 
-                User? user =
-                    await Authentication.signInWithGoogle(context: context);
+                int? user =
+                    await Authentication.signUpWithGoogle(context: context);
 
-                FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .set({
-                  'email': FirebaseAuth.instance.currentUser!.email,
-                  'firstName': "Srikar",
-                  'lastName': "Tadeparti",
-                  'username': "glintingcarp",
-                });
-                // TODO: Add a method call to the Google Sign-In authentication
-
-                setState(() {
-                  _isSigningIn = false;
-                });
-                User? user1 = FirebaseAuth.instance.currentUser;
-
-                if (user1 != null) {
-                  Navigator.of(context).pushReplacementNamed('/home');
+                if (user == 0) {
+                  Navigator.of(context).pushReplacementNamed("/home");
+                } else {
+                  // TODO: Display Error
                 }
+                // FirebaseFirestore.instance
+                //     .collection('users')
+                //     .doc(FirebaseAuth.instance.currentUser!.uid)
+                //     .set({
+                //   'email': FirebaseAuth.instance.currentUser!.email,
+                //   'firstName': "Srikar",
+                //   'lastName': "Tadeparti",
+                //   'username': "glintingcarp",
+                // });
+                // // TODO: Add a method call to the Google Sign-In authentication
+
+                // setState(() {
+                //   _isSigningIn = false;
+                // });
+                // User? user1 = FirebaseAuth.instance.currentUser;
+
+                // if (user1 != null) {
+                //   Navigator.of(context).pushReplacementNamed('/home');
+                // }
               },
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -391,7 +414,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: Text(
-                        'Sign in with Google',
+                        'Sign up with Google',
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.black54,

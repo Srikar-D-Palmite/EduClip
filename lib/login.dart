@@ -18,64 +18,55 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          child: Container(
-            // decoration: const BoxDecoration(
-            //   gradient: LinearGradient(
-            //     begin: Alignment.topRight,
-            //     end: Alignment.bottomLeft,
-            //     colors: [Colors.blue, Colors.purple],
-            //   ),
-            // ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  'Educlip',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 60.0,
-                    color: Colors.black,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Educlip',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 60.0,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 48.0),
+              const LoginForm(),
+              const Divider(),
+              const SizedBox(height: 10.0),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RegistrationPage(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    "Don't have an account? Sign up",
+                    // style: TextStyle(color: Colors.black),
                   ),
                 ),
-                const SizedBox(height: 48.0),
-                LoginForm(),
-                const Divider(),
-                const SizedBox(height: 10.0),
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegistrationPage(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      "Don't have an account? Sign up",
-                      // style: TextStyle(color: Colors.black),
-                    ),
+              ),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResetScreenPage(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    "Forgot Password ?",
+                    // style: TextStyle(color: Colors.black),
                   ),
                 ),
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ResetScreenPage(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      "Forgot Password ?",
-                      // style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -323,7 +314,8 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                   _isSigningIn = true;
                 });
 
-                User? user =
+                // User? user =
+                num err =
                     await Authentication.signInWithGoogle(context: context);
 
                 // TODO: Add a method call to the Google Sign-In authentication
@@ -331,6 +323,12 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                 setState(() {
                   _isSigningIn = false;
                 });
+
+                if (err == -1) {
+                  return;
+                  // TODO: Display error message
+                }
+
                 User? user1 = FirebaseAuth.instance.currentUser;
 
                 if (user1 != null) {
