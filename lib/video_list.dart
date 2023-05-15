@@ -3,8 +3,8 @@ import 'video_player.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class VideoGrid extends StatefulWidget {
-  const VideoGrid({
+class VideoList extends StatefulWidget {
+  const VideoList({
     super.key,
     required List<String> videoKeys,
   }) : _videoKeys = videoKeys;
@@ -12,10 +12,10 @@ class VideoGrid extends StatefulWidget {
   final List<String> _videoKeys;
 
   @override
-  State<VideoGrid> createState() => _VideoGridState();
+  State<VideoList> createState() => _VideoListState();
 }
 
-class _VideoGridState extends State<VideoGrid> {
+class _VideoListState extends State<VideoList> {
   late List<Future<VideoPlayerController>> _controllers;
   late List<VideoPlayerController> _snapshotControllers;
   late List<String> _videoUrls;
@@ -133,9 +133,9 @@ class _VideoGridState extends State<VideoGrid> {
               itemCount: widget._videoKeys.length,
               // The layout of the grid
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5,
+                crossAxisCount: 1,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 40,
                 childAspectRatio: 0.47,
               ),
               // The widgets to display in the grid

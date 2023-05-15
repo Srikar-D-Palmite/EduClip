@@ -14,6 +14,7 @@ import 'settings.dart';
 import 'change_password.dart';
 import 'sendmessage.dart';
 import 'reset_password.dart';
+import 'home.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -83,7 +84,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-// This widget represents the home screen of the application
+// This widget represents the application screen of the application
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
@@ -146,7 +147,9 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: null, // hide the app bar
       // The body of the scaffold is the widget that corresponds to the currently selected tab
       body: (() {
-        if (_selectedIndex == 1) {
+        if (_selectedIndex == 0) {
+          return Home();
+        } else if (_selectedIndex == 1) {
           return Explore();
         } else if (_selectedIndex == 2) {
           return MessagesPage();
