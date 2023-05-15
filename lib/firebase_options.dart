@@ -67,6 +67,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1070606127646',
     projectId: 'edu-clip',
     storageBucket: 'edu-clip.appspot.com',
+    androidClientId: '1070606127646-0jpbkcg4n3bvksj5kfqtg3qtb8vjp3as.apps.googleusercontent.com',
     iosClientId: '1070606127646-onl5kp4vnf39bhlc0gnd3ojh3tcbbt74.apps.googleusercontent.com',
     iosBundleId: 'com.example.eduClip',
   );
@@ -77,6 +78,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1070606127646',
     projectId: 'edu-clip',
     storageBucket: 'edu-clip.appspot.com',
+    androidClientId: '1070606127646-0jpbkcg4n3bvksj5kfqtg3qtb8vjp3as.apps.googleusercontent.com',
     iosClientId: '1070606127646-onl5kp4vnf39bhlc0gnd3ojh3tcbbt74.apps.googleusercontent.com',
     iosBundleId: 'com.example.eduClip',
   );

@@ -9,11 +9,9 @@ import 'profile.dart';
 import 'explore.dart';
 import 'login.dart';
 import 'notifications.dart';
-import 'authentication.dart';
 import 'settings.dart';
 import 'change_password.dart';
 import 'sendmessage.dart';
-import 'reset_password.dart';
 
 // This is the main entry point for the application
 void main() async {
@@ -21,11 +19,13 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 // This widget is the root of the application
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
   static _MyAppState of(BuildContext context) =>
@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
         // The initial screen of the application
         initialRoute: '/login',
         routes: {
-          '/login': (context) => LoginPage(),
+          '/login': (context) => const LoginPage(),
           '/home': (context) => const MyHomePage(title: 'Educlip'),
           '/verify': (context) => VerifyScreen(),
           '/change': (context) => ChangePasswordPage(),
@@ -151,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
         } else if (_selectedIndex == 2) {
           return MessagesPage();
         } else if (_selectedIndex == 3) {
-          return NotificationsPage();
+          return const NotificationsPage();
         } else if (_selectedIndex == 4) {
           return ProfilePage();
         }

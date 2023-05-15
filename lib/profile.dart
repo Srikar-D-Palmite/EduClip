@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'settings.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -13,7 +15,7 @@ class ProfilePage extends StatefulWidget {
 // The profile page should be expanded later on and modified. It should also be replicable so that it may be used for other people's profiles also
 class _ProfilePageState extends State<ProfilePage> {
   User? user;
-  late List<String> _videoKeys = [];
+  late final List<String> _videoKeys = [];
   late Future<QuerySnapshot<Map<String, dynamic>>> querySnapshot;
 
   @override
@@ -42,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
-                    ProfileInfo(),
+                    const ProfileInfo(),
                     FutureBuilder<QuerySnapshot>(
                         future: querySnapshot,
                         builder: (context, AsyncSnapshot snapshot) {
@@ -112,7 +114,7 @@ class ProfileInfo extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
         const SizedBox(height: 10.0),
-        LoadProfileInfo(),
+        const LoadProfileInfo(),
         const SizedBox(height: 20.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

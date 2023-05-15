@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'video_player.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,7 @@ class VideoGrid extends StatefulWidget {
 
 class _VideoGridState extends State<VideoGrid> {
   late List<Future<VideoPlayerController>> _controllers;
+  late List<VideoPlayerController?> _snapshotControllers;
   late List<String> _videoUrls;
   late FirebaseFirestore _db;
   late Future<QuerySnapshot<Map<String, dynamic>>> querySnapshot;
@@ -28,6 +30,7 @@ class _VideoGridState extends State<VideoGrid> {
     _db = FirebaseFirestore.instance;
     _videoUrls = [];
     _controllers = [];
+    _snapshotControllers = [];
     getVideos();
   }
 
@@ -35,13 +38,18 @@ class _VideoGridState extends State<VideoGrid> {
   void dispose() {
     // dispose all the video players when the widget is disposed
     // _controllers.forEach((controller) => controller.dispose());
+    // _snapshotControllers.forEach((controller) => controller.dispose());
+    _videoUrls.clear();
     super.dispose();
   }
 
   void getVideos() async {
     try {
       // I previously incorrectly used url whereIn widget._videoKeys. We query the database for the video urls with the given document ids (keys)
-      querySnapshot = FirebaseFirestore.instance.collection("videos").where(FieldPath.documentId, whereIn: widget._videoKeys).get();
+      querySnapshot = FirebaseFirestore.instance
+          .collection("videos")
+          .where(FieldPath.documentId, whereIn: widget._videoKeys)
+          .get();
       setState(() {});
     } catch (e) {
       print('Error loading videos: $e');
@@ -50,15 +58,20 @@ class _VideoGridState extends State<VideoGrid> {
 
   void fillUrls(QuerySnapshot snapshot) {
     for (var i = 0; i < widget._videoKeys.length; i++) {
-      snapshot.docs.forEach((doc) {
+      for (var doc in snapshot.docs) {
         _videoUrls.add(doc["url"]);
-      });
+      }
     }
   }
 
   Future<VideoPlayerController> loadController(index) async {
-    final controller = VideoPlayerController.network(_videoUrls[index]);
-    await controller.initialize();
+    String videoUrl = _videoUrls[index];
+    final controller = VideoPlayerController.network(videoUrl);
+    try {
+      await controller.initialize();
+    } on PlatformException catch (e) {
+      // TODO: Failed to load video
+    }
     return controller;
   }
 
@@ -68,8 +81,9 @@ class _VideoGridState extends State<VideoGrid> {
       // indexing is difficult because the list is not initialized yet
       future: _controllers[index],
       builder: (context, snapshot) {
+        _snapshotControllers.add(snapshot.data);
         if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData) {
+            snapshot.hasData) {
           final controller = snapshot.data;
           if (controller == null || !controller.value.isInitialized) {
             return LinearProgressIndicator(
@@ -107,7 +121,8 @@ class _VideoGridState extends State<VideoGrid> {
         future: querySnapshot,
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData && snapshot.data.docs.length > 0) {
+              snapshot.hasData &&
+              snapshot.data.docs.length > 0) {
             fillUrls(snapshot.data);
             return GridView.builder(
               shrinkWrap: true,
