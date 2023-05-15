@@ -1,7 +1,13 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:edu_clip/video_grid.dart';
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:path_provider/path_provider.dart';
+import 'take_video_page.dart';
 
 import 'settings.dart';
 
@@ -72,9 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class ProfileInfo extends StatelessWidget {
-  const ProfileInfo({
-    super.key,
-  });
+  const ProfileInfo({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -91,13 +95,18 @@ class ProfileInfo extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               }
-              if (snapshot.hasError) {
+              if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data?.data() == null) {
                 return const Text('Error');
               }
-              final Map<String, dynamic> data =
-                  snapshot.data?.data()! as Map<String, dynamic>;
+              final Map<String, dynamic>? data =
+                  snapshot.data?.data()! as Map<String, dynamic>?;
+              if (data == null) {
+                return const Text('Error');
+              }
               return Text(
-                "${data['firstName'] ?? 0} ${data['lastName'] ?? 0}",
+                "${data['firstName'] ?? ''} ${data['lastName'] ?? ''}",
                 style: const TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
@@ -122,11 +131,16 @@ class ProfileInfo extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               }
-              if (snapshot.hasError) {
+              if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data?.data() == null) {
                 return const Text('Error');
               }
-              final Map<String, dynamic> data =
-                  snapshot.data?.data()! as Map<String, dynamic>;
+              final Map<String, dynamic>? data =
+                  snapshot.data?.data()! as Map<String, dynamic>?;
+              if (data == null) {
+                return const Text('Error');
+              }
               return Text(
                 "@${data['username'] ?? 0}",
                 style: const TextStyle(
@@ -144,18 +158,29 @@ class ProfileInfo extends StatelessWidget {
             UserInfoArea(name: "Following", value: 21),
           ],
         ),
-        const SizedBox(height: 20.0),
-        Ink(
-          decoration: BoxDecoration(border: Border.all()),
-          child: IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {},
-          ),
-        ),
-        const SizedBox(height: 30.0),
+        SizedBox(height: 20),
+        GestureDetector(
+            onTap: () {
+              _showVideoOptions(context);
+            },
+            child: Icon(Icons.add)),
+        SizedBox(height: 30),
       ],
     );
   }
+}
+
+void _showVideoOptions(BuildContext context) async {
+  late List<CameraDescription> cameras;
+  cameras = await availableCameras();
+  final controller = CameraController(cameras[0], ResolutionPreset.high);
+  await controller.initialize();
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => TakeVideoPage(controller: controller),
+    ),
+  );
 }
 
 class ProfileTopBar extends StatelessWidget {
@@ -192,6 +217,36 @@ class ProfileTopBar extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showVideoOptions(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Choose an option'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: Text('Take a video'),
+                  onTap: () {
+                    // TODO: Add code to take a video
+                  },
+                ),
+                SizedBox(height: 10),
+                GestureDetector(
+                  child: Text('Select a video from gallery'),
+                  onTap: () {
+                    // TODO: Add code to select a video from gallery
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
