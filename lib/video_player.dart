@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -16,7 +17,12 @@ class FullScreenVideoPlayer extends StatefulWidget {
 class _VideoPlayerState extends State<FullScreenVideoPlayer> {
   late VideoPlayerController _controller;
   late int _index;
-  int _upvotes = 5;
+  late bool _upvoted = false;
+  late bool _downvoted = false;
+  late int _upvotes = 0;
+  late int _downvotes = 0;
+  late DocumentReference<Map<String, dynamic>> _userDoc;
+  late DocumentReference<Map<String, dynamic>> _videoDoc;
   final double _iconSize = 24;
   bool _textVisible = false;
   late String _videoTitle;
@@ -44,6 +50,46 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
         .then((value) => setState(() {
               _videoTitle = value.docs[0]['username'];
             }));
+
+    _videoDoc = FirebaseFirestore.instance
+        .collection("videos")
+        .doc(widget.videos[_index].id);
+
+    User? user = FirebaseAuth.instance.currentUser;
+
+    _userDoc = FirebaseFirestore.instance.collection("users").doc(user!.uid);
+
+    _videoDoc.get().then((value) {
+      setState(() {
+        _upvotes = value.data()!["upvotes"];
+        _downvotes = value.data()!["downvotes"];
+      });
+    });
+
+    _userDoc.get().then((value) {
+      bool upv = false;
+      bool dov = false;
+
+      print(widget.videos[_index]);
+
+      for (var vid in value.data()!["upvotedVideos"]) {
+        if (vid == _videoDoc.id) {
+          upv = true;
+        }
+      }
+
+      for (var vid in value.data()!["downvotedVideos"]) {
+        if (vid == _videoDoc.id) {
+          dov = true;
+        }
+      }
+
+      setState(() {
+        _upvoted = upv;
+        _downvoted = dov;
+      });
+    });
+
     _controller = VideoPlayerController.network(widget.videos[_index]['url']);
     _controller.initialize().then((_) {
       // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
@@ -56,14 +102,7 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
 
   void _updateVideoPlayer() {
     final oldController = _controller;
-    _controller = VideoPlayerController.network(widget.videos[_index]['url']);
-    _controller.initialize().then((_) {
-      setState(() {});
-      // oldController.removeListener(_onVideoPlayerUpdate);
-      // _controller.addListener(_onVideoPlayerUpdate);
-    });
-    _controller.setLooping(true);
-    _controller.play();
+    _initializeVideoPlayer();
     oldController.dispose();
   }
 
@@ -181,8 +220,24 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                 ),
                 IconButton(
                   onPressed: () {
+                    if (_upvoted) return;
+                    _userDoc.update({
+                      "upvotedVideos": FieldValue.arrayUnion([_videoDoc.id])
+                    });
                     setState(() {
+                      _videoDoc.update({"upvotes": FieldValue.increment(1)});
+                      if (_downvoted) {
+                        _videoDoc
+                            .update({"downvotes": FieldValue.increment(-1)});
+                        _userDoc.update({
+                          "downvotedVideos":
+                              FieldValue.arrayRemove([_videoDoc.id])
+                        });
+                        _downvotes--;
+                      }
                       _upvotes++;
+                      _upvoted = true;
+                      _downvoted = false;
                     });
                   },
                   icon: const ColumnIcon(icon: Icons.arrow_upward),
@@ -190,7 +245,7 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                   iconSize: _iconSize,
                 ),
                 Text(
-                  '$_upvotes',
+                  "${_upvotes - _downvotes}",
                   style: const TextStyle(
                     color: Colors.white,
                   ),
@@ -198,8 +253,23 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                 IconButton(
                   highlightColor: Colors.red,
                   onPressed: () {
+                    if (_downvoted) return;
+                    _userDoc.update({
+                      "downvotedVideos": FieldValue.arrayUnion([_videoDoc.id])
+                    });
                     setState(() {
-                      _upvotes--;
+                      _videoDoc.update({"downvotes": FieldValue.increment(1)});
+                      if (_upvoted) {
+                        _videoDoc.update({"upvotes": FieldValue.increment(-1)});
+                        _userDoc.update({
+                          "upvotedVideos":
+                              FieldValue.arrayRemove([_videoDoc.id])
+                        });
+                        _upvotes--;
+                      }
+                      _downvotes++;
+                      _downvoted = true;
+                      _upvoted = false;
                     });
                   },
                   icon: const ColumnIcon(icon: Icons.arrow_downward),
@@ -248,7 +318,7 @@ class ColumnIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Icon(
       _icon,
-      shadows: <Shadow>[
+      shadows: const <Shadow>[
         Shadow(color: Color.fromARGB(255, 13, 13, 13), blurRadius: 5.0)
       ],
     );

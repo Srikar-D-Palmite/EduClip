@@ -153,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
         } else if (_selectedIndex == 3) {
           return const NotificationsPage();
         } else if (_selectedIndex == 4) {
-          return ProfilePage();
+          return const ProfilePage();
         }
         return _widgetOptions.elementAt(_selectedIndex);
       }()),

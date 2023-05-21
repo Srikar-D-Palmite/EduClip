@@ -90,6 +90,8 @@ class Authentication {
             'createdAt': DateTime.now(),
             'followers': 0,
             'following': 0,
+            'likedVideos': [],
+            'downvotedVideos': []
           });
         }
       }
