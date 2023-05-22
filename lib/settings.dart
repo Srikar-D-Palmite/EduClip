@@ -1,9 +1,10 @@
+import 'change_username_page.dart';
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'change_password.dart';
 
 class SettingsPage extends StatefulWidget {
+  const SettingsPage({Key? key}) : super(key: key);
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
@@ -86,13 +87,20 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           ListTile(
-            title: Text('Change Password'),
+            title: const Text('Change Password'),
+            onTap: () {},
+          ),
+          ListTile(
+            title: const Text('Change Username and Name'),
             onTap: () {
-              Navigator.of(context).pushReplacementNamed('/change');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChangeUsernamePage()),
+              );
             },
           ),
           ListTile(
-            title: Text('Logout'),
+            title: const Text('Logout'),
             onTap: () {
               _logout(context);
             },
@@ -122,6 +130,23 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 }
+//  void _navigateToChangeUsernamePage(BuildContext context) async {
+//     final result = await Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => ChangeUsernamePage(
+//           initialUsername: _username,
+//         ),
+//       ),
+//     );
+
+//     if (result != null && result is String) {
+//       setState(() {
+//         _username = result;
+//       });
+//     }
+//   }
+// }
 
 class Settings {
   late bool notificationsEnabled;
@@ -151,7 +176,7 @@ class SettingsProvider extends InheritedWidget {
   final Settings settings;
   final Function(Settings) updateSettings;
 
-  SettingsProvider({
+  const SettingsProvider({
     Key? key,
     required Widget child,
     required this.settings,
