@@ -298,6 +298,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
           'createdAt': DateTime.now(),
           'followers': 0,
           'following': 0,
+          'upvotedVideos': [],
+          'downvotedVideos': []
         });
         setState(() {
           _errorMessage = '';

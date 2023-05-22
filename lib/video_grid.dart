@@ -19,16 +19,16 @@ class VideoGrid extends StatefulWidget {
 class _VideoGridState extends State<VideoGrid> {
   late List<Future<VideoPlayerController>> _controllers;
   late List<VideoPlayerController?> _snapshotControllers;
-  late List<String> _videoUrls;
-  late FirebaseFirestore _db;
+  late List<QueryDocumentSnapshot<Object?>> _videos;
+  // late FirebaseFirestore _db;
   late Future<QuerySnapshot<Map<String, dynamic>>> querySnapshot;
 
   @override
   void initState() {
     super.initState();
     // Create a list of video Urls to display
-    _db = FirebaseFirestore.instance;
-    _videoUrls = [];
+    // _db = FirebaseFirestore.instance;
+    _videos = [];
     _controllers = [];
     _snapshotControllers = [];
     getVideos();
@@ -39,7 +39,7 @@ class _VideoGridState extends State<VideoGrid> {
     // dispose all the video players when the widget is disposed
     // _controllers.forEach((controller) => controller.dispose());
     // _snapshotControllers.forEach((controller) => controller.dispose());
-    _videoUrls.clear();
+    _videos.clear();
     super.dispose();
   }
 
@@ -59,14 +59,14 @@ class _VideoGridState extends State<VideoGrid> {
   void fillUrls(QuerySnapshot snapshot) {
     for (var i = 0; i < widget._videoKeys.length; i++) {
       for (var doc in snapshot.docs) {
-        _videoUrls.add(doc["url"]);
+        _videos.add(doc);
       }
     }
   }
 
   Future<VideoPlayerController> loadController(index) async {
-    String videoUrl = _videoUrls[index];
-    final controller = VideoPlayerController.network(videoUrl);
+    QueryDocumentSnapshot<Object?> video = _videos[index];
+    final controller = VideoPlayerController.network(video['url']);
     try {
       await controller.initialize();
     } on PlatformException catch (e) {
@@ -145,7 +145,7 @@ class _VideoGridState extends State<VideoGrid> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => FullScreenVideoPlayer(
-                        videoUrls: _videoUrls,
+                        videos: _videos,
                         index: index,
                       ),
                     ),

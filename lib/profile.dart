@@ -22,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     user = FirebaseAuth.instance.currentUser;
+
     getVideos();
   }
 
@@ -53,7 +54,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               snapshot.hasData) {
                             snapshot.data!.docs
                                 .forEach((DocumentSnapshot doc) async {
-                              _videoKeys.add(doc.id);
+                              if (doc["authorId"] ==
+                                  FirebaseAuth.instance.currentUser!.uid) {
+                                _videoKeys.add(doc.id);
+                              }
                             });
                             return VideoGrid(videoKeys: _videoKeys);
                           } else {
@@ -80,61 +84,90 @@ class ProfileInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance
-                .collection('users')
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .get(),
-            builder: (BuildContext context,
-                AsyncSnapshot<DocumentSnapshot> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              }
-              if (snapshot.hasError) {
-                return const Text('Error');
-              }
-              final Map<String, dynamic> data =
-                  snapshot.data?.data()! as Map<String, dynamic>;
-              return Text(
-                "${data['firstName'] ?? 0} ${data['lastName'] ?? 0}",
-                style: const TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              );
-            }),
-        const SizedBox(height: 15.0),
-        CircleAvatar(
-          radius: 50.0,
-          // to replace with user profile image
-          // backgroundImage: AssetImage('/images/avatar.png'),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-        const SizedBox(height: 10.0),
-        const LoadProfileInfo(),
-        const SizedBox(height: 20.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const <Widget>[
-            UserInfoArea(name: "Clips", value: 4),
-            UserInfoArea(name: "Followers", value: 126),
-            UserInfoArea(name: "Following", value: 21),
-          ],
-        ),
-        const SizedBox(height: 20.0),
-        Ink(
-          decoration: BoxDecoration(border: Border.all()),
-          child: IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {},
-          ),
-        ),
-        const SizedBox(height: 30.0),
-      ],
-    );
+    return FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+
+          if (snapshot.hasError) {
+            return const Text('Error');
+          }
+
+          final Map<String, dynamic> data =
+              snapshot.data?.data()! as Map<String, dynamic>;
+
+          return Column(children: [
+            Text(
+              "${data['firstName'] ?? 0} ${data['lastName'] ?? 0}",
+              style: const TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 15.0),
+            CircleAvatar(
+              radius: 50.0,
+              // to replace with user profile image
+              // backgroundImage: AssetImage('/images/avatar.png'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 10.0),
+            const LoadProfileInfo(),
+            const SizedBox(height: 20.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                const UserInfoArea(name: "Clips", value: 4), //TODO
+                UserInfoArea(name: "Followers", value: data['followers'] ?? 0),
+                UserInfoArea(name: "Following", value: data['following'] ?? 0),
+              ],
+            ),
+            const SizedBox(height: 20.0),
+            Ink(
+              decoration: BoxDecoration(border: Border.all()),
+              child: IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {},
+              ),
+            ),
+            const SizedBox(height: 30.0),
+          ]);
+        });
+    //   const SizedBox(height: 15.0),
+    //   CircleAvatar(
+    //     radius: 50.0,
+    //     // to replace with user profile image
+    //     // backgroundImage: AssetImage('/images/avatar.png'),
+    //     backgroundColor: Theme.of(context).colorScheme.primary,
+    //   ),
+    //   const SizedBox(height: 10.0),
+    //   const LoadProfileInfo(),
+    //   const SizedBox(height: 20.0),
+    //   Row(
+    //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //     children: const <Widget>[
+    //       UserInfoArea(name: "Clips", value: 4),
+    //       UserInfoArea(name: "Followers", value: 126),
+    //       UserInfoArea(name: "Following", value: 21),
+    //     ],
+    //   ),
+    //   const SizedBox(height: 20.0),
+    //   Ink(
+    //     decoration: BoxDecoration(border: Border.all()),
+    //     child: IconButton(
+    //       icon: const Icon(Icons.add),
+    //       onPressed: () {},
+    //     ),
+    //   ),
+    //   const SizedBox(height: 30.0),
+    // ],
+    // );
   }
 }
 
@@ -152,8 +185,8 @@ class LoadProfileInfo extends StatelessWidget {
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .get(),
-        builder: (BuildContext context,
-            AsyncSnapshot<DocumentSnapshot> snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
           }
