@@ -70,8 +70,6 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
       bool upv = false;
       bool dov = false;
 
-      print(widget.videos[_index]);
-
       for (var vid in value.data()!["upvotedVideos"]) {
         if (vid == _videoDoc.id) {
           upv = true;
@@ -220,7 +218,19 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                 ),
                 IconButton(
                   onPressed: () {
-                    if (_upvoted) return;
+                    if (_upvoted) {
+                      setState(() {
+                        _videoDoc.update({"upvotes": FieldValue.increment(-1)});
+                        _userDoc.update({
+                          "upvotedVideos":
+                              FieldValue.arrayRemove([_videoDoc.id])
+                        });
+                        _upvotes--;
+                        _upvoted = false;
+                      });
+
+                      return;
+                    }
                     _userDoc.update({
                       "upvotedVideos": FieldValue.arrayUnion([_videoDoc.id])
                     });
@@ -253,7 +263,20 @@ class _VideoPlayerState extends State<FullScreenVideoPlayer> {
                 IconButton(
                   highlightColor: Colors.red,
                   onPressed: () {
-                    if (_downvoted) return;
+                    if (_downvoted) {
+                      setState(() {
+                        _videoDoc
+                            .update({"downvotes": FieldValue.increment(-1)});
+                        _userDoc.update({
+                          "downvotedVideos":
+                              FieldValue.arrayRemove([_videoDoc.id])
+                        });
+                        _downvotes--;
+                        _downvoted = false;
+                      });
+
+                      return;
+                    }
                     _userDoc.update({
                       "downvotedVideos": FieldValue.arrayUnion([_videoDoc.id])
                     });

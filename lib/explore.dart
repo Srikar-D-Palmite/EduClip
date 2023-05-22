@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Explore extends StatefulWidget {
-  Explore({
+  const Explore({
     super.key,
   });
 
@@ -16,8 +16,8 @@ class _ExploreState extends State<Explore> {
   // late Reference storageRef;
   // Reference? imagesRef;
   late FirebaseFirestore db;
-  late List<String> _videoKeys = [];
-  late Future<QuerySnapshot<Map<String, dynamic>>> querySnapshot;
+  late final List<String> _videoKeys = [];
+  late Future<QuerySnapshot<Map<String, dynamic>>> _querySnapshot;
   final _controller = TextEditingController();
 
   @override
@@ -32,7 +32,7 @@ class _ExploreState extends State<Explore> {
 
   void getVideos() async {
     try {
-      querySnapshot = FirebaseFirestore.instance.collection("videos").get();
+      _querySnapshot = FirebaseFirestore.instance.collection("videos").get();
     } catch (e) {
       print('Error loading videos: $e');
     }
@@ -57,7 +57,7 @@ class _ExploreState extends State<Explore> {
             ),
             Expanded(
               child: FutureBuilder<QuerySnapshot>(
-                  future: querySnapshot,
+                  future: _querySnapshot,
                   builder: (context, AsyncSnapshot snapshot) {
                     if (snapshot.connectionState == ConnectionState.done &&
                         snapshot.hasData) {
@@ -104,6 +104,9 @@ class SearchBar extends StatelessWidget {
       // ),
       child: TextField(
         controller: _controller,
+        onSubmitted: (value) {
+          // TOOD: Update video keys
+        },
         decoration: InputDecoration(
           // The word "search" in the searchbox
           hintText: 'Search',
