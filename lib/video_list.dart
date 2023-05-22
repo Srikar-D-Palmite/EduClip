@@ -18,7 +18,7 @@ class VideoList extends StatefulWidget {
 class _VideoListState extends State<VideoList> {
   late List<Future<VideoPlayerController>> _controllers;
   late List<VideoPlayerController> _snapshotControllers;
-  late List<String> _videoUrls;
+  late List<QueryDocumentSnapshot<Object?>> _videos;
   late FirebaseFirestore _db;
   late Future<QuerySnapshot<Map<String, dynamic>>> querySnapshot;
 
@@ -27,7 +27,7 @@ class _VideoListState extends State<VideoList> {
     super.initState();
     // Create a list of video Urls to display
     _db = FirebaseFirestore.instance;
-    _videoUrls = [];
+    _videos = [];
     _controllers = [];
     _snapshotControllers = [];
     getVideos();
@@ -44,14 +44,17 @@ class _VideoListState extends State<VideoList> {
     }
     _controllers.clear();
     _snapshotControllers.clear();
-    _videoUrls.clear();
+    _videos.clear();
     super.dispose();
   }
 
   void getVideos() async {
     try {
       // I previously incorrectly used url whereIn widget._videoKeys. We query the database for the video urls with the given document ids (keys)
-      querySnapshot = FirebaseFirestore.instance.collection("videos").where(FieldPath.documentId, whereIn: widget._videoKeys).get();
+      querySnapshot = FirebaseFirestore.instance
+          .collection("videos")
+          .where(FieldPath.documentId, whereIn: widget._videoKeys)
+          .get();
       setState(() {});
     } catch (e) {
       print('Error loading videos: $e');
@@ -61,15 +64,15 @@ class _VideoListState extends State<VideoList> {
   void fillUrls(QuerySnapshot snapshot) {
     for (var i = 0; i < widget._videoKeys.length; i++) {
       snapshot.docs.forEach((doc) {
-        _videoUrls.add(doc["url"]);
+        _videos.add(doc);
       });
     }
   }
 
   Future<VideoPlayerController> loadController(index) async {
-    final controller = VideoPlayerController.network(_videoUrls[index]);
+    final controller = VideoPlayerController.network(_videos[index]['url']);
     // try {
-      await controller.initialize();
+    await controller.initialize();
     // } on PlatformException catch {
     //   print("HERE--------------------");
     //   print(_videoUrls[index]);
@@ -85,7 +88,7 @@ class _VideoListState extends State<VideoList> {
       builder: (context, snapshot) {
         // _snapshotControllers.add(snapshot.data);
         if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData) {
+            snapshot.hasData) {
           final controller = snapshot.data;
           if (controller == null || !controller.value.isInitialized) {
             return LinearProgressIndicator(
@@ -123,7 +126,8 @@ class _VideoListState extends State<VideoList> {
         future: querySnapshot,
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData && snapshot.data.docs.length > 0) {
+              snapshot.hasData &&
+              snapshot.data.docs.length > 0) {
             fillUrls(snapshot.data);
             return GridView.builder(
               shrinkWrap: true,
@@ -146,7 +150,7 @@ class _VideoListState extends State<VideoList> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => FullScreenVideoPlayer(
-                        videoUrls: _videoUrls,
+                        videos: _videos,
                         index: index,
                       ),
                     ),

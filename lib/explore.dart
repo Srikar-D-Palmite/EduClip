@@ -16,8 +16,8 @@ class _ExploreState extends State<Explore> {
   // late Reference storageRef;
   // Reference? imagesRef;
   late FirebaseFirestore db;
-  late final List<String> _videoKeys = [];
-  late Future<QuerySnapshot<Map<String, dynamic>>> _querySnapshot;
+  late List<String> _videoKeys = [];
+  late Future<QuerySnapshot<Map<String, dynamic>>> querySnapshot;
   final _controller = TextEditingController();
 
   @override
@@ -32,7 +32,7 @@ class _ExploreState extends State<Explore> {
 
   void getVideos() async {
     try {
-      _querySnapshot = FirebaseFirestore.instance.collection("videos").get();
+      querySnapshot = FirebaseFirestore.instance.collection("videos").get();
     } catch (e) {
       print('Error loading videos: $e');
     }
@@ -57,7 +57,7 @@ class _ExploreState extends State<Explore> {
             ),
             Expanded(
               child: FutureBuilder<QuerySnapshot>(
-                  future: _querySnapshot,
+                  future: querySnapshot,
                   builder: (context, AsyncSnapshot snapshot) {
                     if (snapshot.connectionState == ConnectionState.done &&
                         snapshot.hasData) {

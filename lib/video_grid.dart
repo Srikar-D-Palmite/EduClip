@@ -52,6 +52,11 @@ class _VideoGridState extends State<VideoGrid> {
           .get();
       setState(() {});
     } catch (e) {
+      // DONT TOUCH
+      querySnapshot = FirebaseFirestore.instance
+          .collection("videos")
+          .where(FieldPath.documentId, isEqualTo: "💩")
+          .get();
       print('Error loading videos: $e');
     }
   }
@@ -120,9 +125,7 @@ class _VideoGridState extends State<VideoGrid> {
     return FutureBuilder<QuerySnapshot>(
         future: querySnapshot,
         builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData &&
-              snapshot.data.docs.length > 0) {
+          if (snapshot.connectionState == ConnectionState.done) {
             fillUrls(snapshot.data);
             return GridView.builder(
               shrinkWrap: true,
