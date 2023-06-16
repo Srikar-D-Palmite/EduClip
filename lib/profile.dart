@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:edu_clip/video_grid.dart';
 import 'package:flutter/material.dart';
-
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'settings.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -14,9 +17,13 @@ class ProfilePage extends StatefulWidget {
 
 // The profile page should be expanded later on and modified. It should also be replicable so that it may be used for other people's profiles also
 class _ProfilePageState extends State<ProfilePage> {
+  File? _imageFile;
   User? user;
   late final List<String> _videoKeys = [];
   late Future<QuerySnapshot<Map<String, dynamic>>> querySnapshot;
+  late Reference storageRef;
+  Reference? imagesRef;
+
 
   @override
   void initState() {
@@ -84,6 +91,7 @@ class ProfileInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ImagePicker imagePicker = ImagePicker();
     return FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance
             .collection('users')
@@ -111,11 +119,27 @@ class ProfileInfo extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15.0),
-            CircleAvatar(
-              radius: 50.0,
-              // to replace with user profile image
-              // backgroundImage: AssetImage('/images/avatar.png'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
+            Stack(
+              children: [
+                Positioned(
+                  bottom: 10.0,
+                  right: 0.0,
+                  child: IconButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: ((builder) => bottomSheet()),
+                        );
+                      },
+                      icon: Icon(Icons.camera_alt)),
+                ),
+                CircleAvatar(
+                radius: 50.0,
+                // to replace with user profile image
+                // backgroundImage: AssetImage('/images/avatar.png'),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+              ),
+              ],
             ),
             const SizedBox(height: 10.0),
             const LoadProfileInfo(),
@@ -123,7 +147,7 @@ class ProfileInfo extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                const UserInfoArea(name: "Clips", value: 4), //TODO
+                const UserInfoArea(name: "  Clips  ", value: 3), //TODO
                 UserInfoArea(name: "Followers", value: data['followers'] ?? 0),
                 UserInfoArea(name: "Following", value: data['following'] ?? 0),
               ],
@@ -169,6 +193,80 @@ class ProfileInfo extends StatelessWidget {
     // ],
     // );
   }
+}
+
+Widget bottomSheet() {
+  return Container(
+    height: 100.0,
+    width: 100.0,
+    margin: EdgeInsets.symmetric(
+      horizontal: 20,
+      vertical: 20,
+    ),
+    child: Column(
+      children: <Widget>[
+        Text(
+          "Choose Profile photo",
+          style: TextStyle(
+            fontSize: 20.0,
+          ),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            TextButton.icon(
+              icon: Icon(Icons.camera_alt),
+              onPressed: () async {
+                String imageUrl = "";
+                ImagePicker imagePicker = ImagePicker();
+                XFile? file =
+                    await imagePicker.pickImage(source: ImageSource.camera);
+                //if (file == null) return;
+                String uniqueFilename =
+                    DateTime.now().millisecondsSinceEpoch.toString();
+                Reference referenceRoot = FirebaseStorage.instance.ref();
+                Reference referenceDirImage = referenceRoot.child('images');
+                Reference referenceImageUpload =
+                    referenceDirImage.child(uniqueFilename);
+                try {
+                  await referenceImageUpload.putFile(File(file!.path));
+                  imageUrl = await referenceImageUpload.getDownloadURL();
+                } catch (e) {
+                  // TODO
+                }
+              },
+              label: Text("Camera"),
+            ),
+            TextButton.icon(
+              icon: Icon(Icons.photo_album),
+              onPressed: () async {
+                String imageUrl = "";
+                ImagePicker imagePicker = ImagePicker();
+                XFile? file =
+                    await imagePicker.pickImage(source: ImageSource.gallery);
+                String uniqueFilename =
+                    DateTime.now().millisecondsSinceEpoch.toString();
+                Reference referenceRoot = FirebaseStorage.instance.ref();
+                Reference referenceDirImage = referenceRoot.child('images');
+                Reference referenceImageUpload =
+                    referenceDirImage.child(uniqueFilename);
+                try {
+                  await referenceImageUpload.putFile(File(file!.path));
+                  imageUrl = await referenceImageUpload.getDownloadURL();
+                } catch (e) {
+                  // TODO
+                }
+              },
+              label: Text("Gallery"),
+            ),
+          ],
+        )
+      ],
+    ),
+  );
 }
 
 class LoadProfileInfo extends StatelessWidget {

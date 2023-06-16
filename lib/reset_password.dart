@@ -17,21 +17,26 @@ class _ResetScreenState extends State<ResetScreenPage> {
 
   @override
   Widget build(BuildContext context) {
-    final String senderName = "Educlip";
-    final String senderEmail = "noreply@educlip.com";
-    final String subjectLine = "Reset Password Request";
     return Scaffold(
       appBar: AppBar(
         title: Text("Reset Password"),
       ),
       body: Column(
         children: [
+          SizedBox(height: 20),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(20.0),
             child: TextField(
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
-                hintText: ("Enter your email"),
+                filled: true,
+                fillColor: Colors.white,
+                hintText: 'Username or Email',
+                contentPadding: const EdgeInsets.all(16.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: const BorderSide(width: 0.0, color: Colors.black),
+                ),
               ),
               onChanged: (value) {
                 setState(() {
@@ -43,11 +48,18 @@ class _ResetScreenState extends State<ResetScreenPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              ElevatedButton(
-                child: Text("Send Request"),
+              TextButton(
+                child: Text("  Send Request  "),
+                style: TextButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0)),
+                  // minimumSize: const Size.fromHeight(50.0),
+                ),
                 onPressed: () {
                   auth.sendPasswordResetEmail(email: _email);
-                  Navigator.of(context).pushReplacementNamed('/login');
+                  Navigator.of(context).pop();
                 },
               ),
             ],

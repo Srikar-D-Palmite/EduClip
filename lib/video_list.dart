@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'video_player.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,16 +18,16 @@ class VideoList extends StatefulWidget {
 
 class _VideoListState extends State<VideoList> {
   late List<Future<VideoPlayerController>> _controllers;
-  late List<VideoPlayerController> _snapshotControllers;
+  late List<VideoPlayerController?> _snapshotControllers;
   late List<QueryDocumentSnapshot<Object?>> _videos;
-  late FirebaseFirestore _db;
+  // late FirebaseFirestore _db;
   late Future<QuerySnapshot<Map<String, dynamic>>> querySnapshot;
 
   @override
   void initState() {
     super.initState();
     // Create a list of video Urls to display
-    _db = FirebaseFirestore.instance;
+    // _db = FirebaseFirestore.instance;
     _videos = [];
     _controllers = [];
     _snapshotControllers = [];
@@ -36,14 +37,8 @@ class _VideoListState extends State<VideoList> {
   @override
   void dispose() {
     // dispose all the video players when the widget is disposed
-    // _controllers.forEach((controller) => {
-    //   controller.whenComplete(() => controller.dispose())
-    // });
-    for (var widget in _snapshotControllers) {
-      widget.dispose();
-    }
-    _controllers.clear();
-    _snapshotControllers.clear();
+    // _controllers.forEach((controller) => controller.dispose());
+    // _snapshotControllers.forEach((controller) => controller.dispose());
     _videos.clear();
     super.dispose();
   }
@@ -63,20 +58,20 @@ class _VideoListState extends State<VideoList> {
 
   void fillUrls(QuerySnapshot snapshot) {
     for (var i = 0; i < widget._videoKeys.length; i++) {
-      snapshot.docs.forEach((doc) {
+      for (var doc in snapshot.docs) {
         _videos.add(doc);
-      });
+      }
     }
   }
 
   Future<VideoPlayerController> loadController(index) async {
-    final controller = VideoPlayerController.network(_videos[index]['url']);
-    // try {
-    await controller.initialize();
-    // } on PlatformException catch {
-    //   print("HERE--------------------");
-    //   print(_videoUrls[index]);
-    // }
+    QueryDocumentSnapshot<Object?> video = _videos[index];
+    final controller = VideoPlayerController.network(video['url']);
+    try {
+      await controller.initialize();
+    } on PlatformException catch (e) {
+      // TODO: Failed to load video
+    }
     return controller;
   }
 
@@ -86,7 +81,7 @@ class _VideoListState extends State<VideoList> {
       // indexing is difficult because the list is not initialized yet
       future: _controllers[index],
       builder: (context, snapshot) {
-        // _snapshotControllers.add(snapshot.data);
+        _snapshotControllers.add(snapshot.data);
         if (snapshot.connectionState == ConnectionState.done &&
             snapshot.hasData) {
           final controller = snapshot.data;
@@ -138,8 +133,8 @@ class _VideoListState extends State<VideoList> {
               // The layout of the grid
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 1,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 40,
+                crossAxisSpacing: 5,
+                mainAxisSpacing: 20,
                 childAspectRatio: 0.47,
               ),
               // The widgets to display in the grid

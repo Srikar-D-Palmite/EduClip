@@ -171,10 +171,6 @@ class _LoginFormState extends State<LoginForm> {
               onPressed: () => _submitForm(context),
               style: TextButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                // textStyle: const TextStyle(
-                //   color: Colors.black,
-                //   fontWeight: FontWeight.bold,
-                // ),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0)),
